@@ -30,7 +30,7 @@ namespace AmongUsDriver.Commands
         public async Task Mute(CommandContext ctx)
         {
 
-            var everyone = ctx.Guild.EveryoneRole;
+            //var everyone = ctx.Guild.EveryoneRole;
 
             if (ctx.Member.VoiceState == null)
             {
@@ -55,7 +55,7 @@ namespace AmongUsDriver.Commands
         public async Task Unmute(CommandContext ctx)
         {
 
-            var everyone = ctx.Guild.EveryoneRole;
+            //var everyone = ctx.Guild.EveryoneRole;
 
             if (ctx.Member.VoiceState == null)
             {
