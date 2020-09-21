@@ -16,8 +16,8 @@ Note: This link gives the bot admin permissions on yourself to do whatever it wa
 
 Commands
 -----------
-The prefix is "."  
-Example: ".help"
+The bot's prefix is "."  
+For example: ".help"
 
 
 "Moderator" is the person executing the command.
