@@ -1,5 +1,5 @@
 # Among Us Driver
-A discord bot that allows you to mute and unmute all players really quickly.
+A discord bot for the game Among Us that allows you to mute and unmute all players really quickly.
 
 # Origin
 
