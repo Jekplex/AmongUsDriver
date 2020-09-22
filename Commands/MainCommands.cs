@@ -30,8 +30,6 @@ namespace AmongUsDriver.Commands
         public async Task Mute(CommandContext ctx)
         {
 
-            //var everyone = ctx.Guild.EveryoneRole;
-
             if (ctx.Member.VoiceState == null)
             {
                 await ctx.Channel.SendMessageAsync("You cannot be found in a voice channel.").ConfigureAwait(false);
@@ -55,8 +53,6 @@ namespace AmongUsDriver.Commands
         public async Task Unmute(CommandContext ctx)
         {
 
-            //var everyone = ctx.Guild.EveryoneRole;
-
             if (ctx.Member.VoiceState == null)
             {
                 await ctx.Channel.SendMessageAsync("You cannot be found in a voice channel.").ConfigureAwait(false);
@@ -73,10 +69,6 @@ namespace AmongUsDriver.Commands
             }
 
         }
-
-        // IDEAS
-        // Game Queues
-        // Lobby Music During Round
 
     }
 }
