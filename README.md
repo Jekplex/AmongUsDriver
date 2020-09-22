@@ -16,6 +16,8 @@ You can add my bot to your server by using the link below.
 
 https://discord.com/api/oauth2/authorize?client_id=757258351146041474&permissions=326122832&scope=bot
 
+Note: This link now has appropriate permissions for the current and potential future usage for this bot.
+
 Commands
 -----------
 The bot's prefix is "."  
