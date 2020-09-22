@@ -30,3 +30,7 @@ For example: ".help"
 * .ping - Returns the message: "Pong!"
 * .mute - Server mutes all members in the moderators current voice channel.
 * .unmute - Server unmutes all members in the moderators current voice channel.
+
+For Developers
+-----------
+Coming Soon...
