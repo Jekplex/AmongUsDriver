@@ -6,7 +6,7 @@ Origin
 
 The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me. I wanted a fix. So I decided to make one. I present to you...
 
-The Among Us Driver Bot!  
+The Among Us Driver!  
 
 Terrible name, I know. I couldn't think of anything else to call it.
 
@@ -24,6 +24,7 @@ For example: ".help"
 
 "Moderator" is the person executing the command.
 
+* .help
 * .ping - Returns the message: "Pong!"
 * .mute - Server mutes all members in the moderators current voice channel.
 * .unmute - Server unmutes all members in the moderators current voice channel.
