@@ -9,6 +9,8 @@ namespace AmongUsDriver
     {
         [JsonProperty("token")]
         public string Token { get; private set; }
+        [JsonProperty("token2")]
+        public string Token2 { get; private set; }
         [JsonProperty("prefix")]
         public string Prefix { get; private set; }
     }

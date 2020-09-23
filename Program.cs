@@ -34,7 +34,7 @@ namespace AmongUsDriver
             // Discord Config
             var discordConfig = new DiscordConfiguration
             {
-                Token = configJson.Token,
+                Token = configJson.Token2,
                 TokenType = TokenType.Bot,
 
                 //UseInternalLogHandler = true,
