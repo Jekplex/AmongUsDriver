@@ -14,7 +14,7 @@ How To Use
 -----------
 You can add my bot to your server by using the link below.
 
-https://discord.com/api/oauth2/authorize?client_id=757258351146041474&permissions=326122832&scope=bot
+https://discord.com/oauth2/authorize?client_id=757258351146041474&scope=bot&permissions=57687120
 
 Note: This link now has appropriate permissions for the current and potential future usage for this bot. If some permissions are not granted, the bot may not work as intended.
 
