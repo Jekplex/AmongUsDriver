@@ -82,7 +82,7 @@ namespace AmongUsDriver
         }
 
         [Command("move")]
-        [Description("Moves everyone from the moderator's voice channel to a desired voice channel. (If you have spaces in your Voice Channel name please use quotation marks. For example: \"Among Us\")")]
+        [Description("Moves everyone from the moderator's current voice channel to a desired voice channel. (If your target voice channel has spaces please use quotation marks. For example: \"Among Us\")")]
         [RequirePermissions(DSharpPlus.Permissions.MoveMembers)]
         public async Task Move(CommandContext ctx, string voice_channel)
         {

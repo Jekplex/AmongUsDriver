@@ -62,7 +62,7 @@ namespace AmongUsDriver
             //        await e.Message.RespondAsync("pong!");
             //};
 
-            // In Event CommandError do this...
+            // In Event of CommandError do this...
             commands.CommandErrored += async e =>
             {
                 await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error!");
