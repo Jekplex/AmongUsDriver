@@ -32,7 +32,7 @@ namespace AmongUsDriver
             var configJson = JsonConvert.DeserializeObject<ConfigJson>(json);
 
             // Discord Config
-            discord = new DiscordClient(new DiscordConfiguration
+            var discordConfig = new DiscordConfiguration
             {
                 Token = configJson.Token,
                 TokenType = TokenType.Bot,
@@ -40,16 +40,19 @@ namespace AmongUsDriver
                 //UseInternalLogHandler = true,
                 //LogLevel = LogLevel.Debug
                 MinimumLogLevel = LogLevel.Debug,
+            };
 
+            discord = new DiscordClient(discordConfig);
 
-            });
+            // Setting up commands config
+            var commandsConfig = new CommandsNextConfiguration
+            {
+                StringPrefixes = new string[] { configJson.Prefix },
+                IgnoreExtraArguments = false,
+            };
 
             // Setting up commands
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration
-            {
-                StringPrefixes = new string[] { configJson.Prefix }
-            });
-
+            commands = discord.UseCommandsNext(commandsConfig);
             commands.RegisterCommands<MyCommands>();
 
             // Hooking into the event message created
@@ -58,6 +61,12 @@ namespace AmongUsDriver
             //    if (e.Message.Content.ToLower().StartsWith("ping"))
             //        await e.Message.RespondAsync("pong!");
             //};
+
+            // In Event CommandError do this...
+            commands.CommandErrored += async e =>
+            {
+                await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error!");
+            };
 
             await discord.ConnectAsync();
 
