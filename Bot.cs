@@ -1,7 +1,9 @@
 ﻿using AmongUsDriver.Commands;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Interactivity;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -16,6 +18,7 @@ namespace AmongUsDriver
     public class Bot
     {
         public DiscordClient Client { get; private set; }
+        public InteractivityExtension Interactivity { get; private set; }
         public CommandsNextExtension Commands { get; private set; }
 
         public async Task RunAsync()
@@ -37,11 +40,17 @@ namespace AmongUsDriver
 
                 //UseInternalLogHandler = true,
                 //LogLevel = LogLevel.Debug
+                
             };
 
             Client = new DiscordClient(config);
 
             Client.Ready += OnClientReady;
+
+            //Client.UseInteractivity(new InteractivityConfiguration
+            //{
+            //    //Timeout = TimeSpan.FromMinutes(1)
+            //}); ;
 
             var commandsConfig = new CommandsNextConfiguration
             {
@@ -49,7 +58,9 @@ namespace AmongUsDriver
                 EnableDms = false,
                 EnableMentionPrefix = true,
                 //DmHelp = true,
+                //IgnoreExtraArguments = false,
             };
+
 
             Commands = Client.UseCommandsNext(commandsConfig);
 
