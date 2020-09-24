@@ -20,6 +20,7 @@ namespace AmongUsDriver
         }
 
         [Command("mute")]
+        [Aliases("m")]
         [Description("Mutes everyone in your voice channel. (This server only)")]
         [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
         public async Task Mute(CommandContext ctx)
@@ -51,6 +52,7 @@ namespace AmongUsDriver
         }
 
         [Command("unmute")]
+        [Aliases("u")]
         [Description("Unmutes everyone in the your voice channel. (This server only)")]
         [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
         public async Task Unmute(CommandContext ctx)
@@ -84,13 +86,13 @@ namespace AmongUsDriver
         [Command("move")]
         [Description("Moves everyone from the moderator's current voice channel to a desired voice channel. (If your target voice channel has spaces please use quotation marks. For example: \"Among Us\")")]
         [RequirePermissions(DSharpPlus.Permissions.MoveMembers)]
-        public async Task Move(CommandContext ctx, string voice_channel)
+        public async Task Move(CommandContext ctx, [RemainingText()] string voice_channel) // need to test this.
         {
 
             // before doing these instructions check if player is even present a voice channel.
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
                 return;
             }
 
@@ -147,7 +149,6 @@ namespace AmongUsDriver
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left/moved too quickly.");
             }
-            
 
         }
 
@@ -185,6 +186,7 @@ namespace AmongUsDriver
 
         // list
         [Command("list")]
+        [Aliases("ls")]
         [Description("Shows the list of players in the game queue.")]
         public async Task List(CommandContext ctx)
         {
@@ -214,27 +216,69 @@ namespace AmongUsDriver
                 await ctx.RespondAsync(output);
             }
 
-                
-
             
         }
-
-        // setcodeandsend
-        [Command("setcodeandsend")]
-        [Description("Sets the game code and sends it to the first 10 people in the queue.")]
-        public async Task SetCodeAndSend(CommandContext ctx, string code)
+        
+        [Command("set")]
+        [Description("Sets the game code for queue.")]
+        public async Task Set(CommandContext ctx,[RemainingText()] string code)
         {
             // set code
-            Program.guildToCode[ctx.Channel.GuildId] = code;
+            Program.guildToCode[ctx.Channel.GuildId] = code; // adds code to guildToCode.
 
-            // send dms
-            for (int i = 0; i < Program.guildToQueue[ctx.Channel.GuildId].Count; i++)
+            // delete command message.
+            await ctx.Message.DeleteAsync();
+            await ctx.RespondAsync($"{ctx.Member.Mention}, code has been set.");
+        
+        }
+
+        [Command("send")]
+        [Description("Sends the code out to players in the game queue.")]
+        public async Task Send(CommandContext ctx)
+        {
+            // grabs gamecode
+            var code = Program.guildToCode[ctx.Channel.GuildId];
+
+            // grab list of recipients
+            var playerList = Program.guildToQueue[ctx.Channel.GuildId];
+
+            // loop through playerlist, (cap at 10).
+            // save dm channel
+            var dm_channels = new List<DiscordDmChannel>();
+            // send message
+            for (int i = 0; i < playerList.Count; i++)
             {
-                await Program.guildToQueue[ctx.Channel.GuildId][i].SendMessageAsync(
-                    "--------------------" + System.Environment.NewLine +
-                    ctx.Guild.Name + " / " + ctx.Member.DisplayName + System.Environment.NewLine + 
-                    Program.guildToCode[ctx.Channel.GuildId].ToUpper());
+                if (i < 10)
+                {
+                    dm_channels.Add(playerList.ElementAt(i).CreateDmChannelAsync().Result);
+                    await playerList.ElementAt(i).SendMessageAsync(
+                        ctx.Guild.Name + " / " + ctx.Member.DisplayName + System.Environment.NewLine + 
+                        Program.guildToCode[ctx.Channel.GuildId].ToUpper()
+                        );
+                }
+                else
+                {
+                    break;
+                }
             }
+
+            //wait for seconds
+            var s = 60;
+            await Task.Delay(1000 * s);
+
+            // delete messages
+            // loop through dm channels and messages.
+            for (int i = 0; i < dm_channels.Count(); i++)
+            {
+                //dm_channels[i].
+                var messages = dm_channels.ElementAt(i).GetMessagesAsync(1).Result;
+
+                for (int i2 = 0; i2 <messages.Count; i2++)
+                {
+                    await messages[i2].DeleteAsync(); // deletes message
+                }
+            }
+
         }
 
         // clear
@@ -259,7 +303,7 @@ namespace AmongUsDriver
 
         // kick
         [Command("kick")]
-        [Description("Kicks a player by id from the game list.")]
+        [Description("Kicks a player by id from the game queue.")]
         public async Task Kick(CommandContext ctx, int id)
         {
             
@@ -274,24 +318,6 @@ namespace AmongUsDriver
                 await ctx.RespondAsync($"{Program.guildToQueue[ctx.Channel.GuildId].ElementAt(id).Mention} has been kicked from the queue.");
             }
 
-        }
-
-        [Command("test")]
-        [RequireOwner]
-        public async Task ClearDms(CommandContext ctx)
-        {
-            // i simply want this to clear old dms.
-
-            //var channel = ctx.Client.GetChannelAsync(757988708115939360).Result;
-            //var messages = channel.GetMessagesAsync(5).Result;
-            //await channel.DeleteMessagesAsync(messages, "Waste");
-            //await ctx.RespondAsync("test");
-
-            //var channel = ctx.Client.GetChannelAsync(757988708115939360).Result;
-            await ctx.RespondAsync("test" + ctx.Client.PrivateChannels);
-
-            ;
-            
         }
 
     }

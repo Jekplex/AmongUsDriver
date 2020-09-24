@@ -93,16 +93,16 @@ namespace AmongUsDriver
             // In Event of CommandError do this...
             commands.CommandErrored += async e =>
             {
-                //switch (e.Command.Name.ToLower())
-                //{
-                //    case "move":
-                //        await e.Context.RespondAsync($"{e.Context.Member.Mention}, the .move command requires a voice channel as an argument.");
-                //        break;
-                //
-                //    //default:
-                //    //    await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error!");
-                //    //    break;
-                //}
+                switch (e.Command.Name.ToLower())
+                {
+                    case "move":
+                        await e.Context.RespondAsync($"{e.Context.Member.Mention}, the .move command requires a voice channel as an argument.");
+                        break;
+                
+                    default:
+                        await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error!");
+                        break;
+                }
             };
 
             
