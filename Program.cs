@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -15,9 +18,17 @@ namespace AmongUsDriver
 
         static CommandsNextExtension commands;
 
+        public static Dictionary<ulong, List<DiscordMember>> guildToQueue;
+        public static Dictionary<ulong, string> guildToCode;
+
         static void Main(string[] args)
         {
             //Console.WriteLine("Hello World!");
+
+            // My Dictionaries
+            guildToQueue = new Dictionary<ulong, List<DiscordMember>>();
+            guildToCode = new Dictionary<ulong, string>();
+
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
@@ -62,11 +73,40 @@ namespace AmongUsDriver
             //        await e.Message.RespondAsync("pong!");
             //};
 
+            // When ready grab all discord servers and add them to the guildToQueue dictionary
+            discord.Ready += async e =>
+            {
+                
+                var guildList = e.Client.Guilds.ToList();
+                //var gameQueue = new List<DiscordMember>();
+
+                for (int i = 0; i < guildList.Count; i++)
+                {
+                    guildToQueue.Add(guildList.ElementAt(i).Key, new List<DiscordMember>());
+                    guildToCode.Add(guildList.ElementAt(i).Key, "");
+                }
+
+                await Task.CompletedTask;
+
+            };
+
             // In Event of CommandError do this...
             commands.CommandErrored += async e =>
             {
-                await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error!");
+                //switch (e.Command.Name.ToLower())
+                //{
+                //    case "move":
+                //        await e.Context.RespondAsync($"{e.Context.Member.Mention}, the .move command requires a voice channel as an argument.");
+                //        break;
+                //
+                //    //default:
+                //    //    await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error!");
+                //    //    break;
+                //}
             };
+
+            
+
 
             await discord.ConnectAsync();
 
