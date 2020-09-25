@@ -199,31 +199,67 @@ namespace AmongUsDriver
         [Description("Shows the list of players in the game queue.")]
         public async Task List(CommandContext ctx)
         {
-            
+            //var goodPlayers;
+            //var badPlayers;
+
+            var listEmbed = new DiscordEmbedBuilder
+            {
+                Title = "Game Queue",
+                Description = "Here is the list of players in the queue:",
+                Color = DiscordColor.Orange,
+            };
+
+            listEmbed.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl);
+            //listEmbed.AddField("Players that will recieve game code.", String.Empty, false);
+            //listEmbed.AddField("Players that will NOT recieve game code.", String.Empty, false);
+            //
+            //listEmbed.Fields.ElementAt(0).Value = "Good Players";
+            //listEmbed.Fields.ElementAt(0).Value = "Bad Players";
+            //await ctx.RespondAsync(embed: listEmbed);
+
             // if queue is empty
             if (Program.guildToQueue[ctx.Channel.GuildId].Count == 0)
             {
-                await ctx.RespondAsync("The queue is empty.");
+                listEmbed.Description += System.Environment.NewLine + System.Environment.NewLine + "The queue is empty.";
+                await ctx.RespondAsync(embed: listEmbed);
             }
             else
             {
-                string output = "Here's the list of players in the queue:" + System.Environment.NewLine;
+                //string output = "Here's the list of players in the queue:" + System.Environment.NewLine;
 
                 //output += "[ID - Name - HasSeat?]" + System.Environment.NewLine;
+
+                listEmbed.AddField("Players that will recieve game code. 👍", "-", true); 
+                listEmbed.AddField("Players that will NOT recieve game code. 👎", "-", true);
+                
+                if (Program.guildToQueue[ctx.Channel.GuildId].Count > 10)
+                {
+                    listEmbed.Fields.ElementAt(0).Value = String.Empty;
+                    listEmbed.Fields.ElementAt(1).Value = String.Empty;
+                }
+                else
+                {
+                    listEmbed.Fields.ElementAt(0).Value = String.Empty;
+                }
+
 
                 for (int i = 0; i < Program.guildToQueue[ctx.Channel.GuildId].Count; i++)
                 {
                     if (i < 10)
                     {
-                        output += i.ToString() + " - " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + " - 👍" + System.Environment.NewLine;
+                        listEmbed.Fields.ElementAt(0).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
+
+                        //output += i.ToString() + " - " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + " - 👍" + System.Environment.NewLine;
                     }
                     else
                     {
-                        output += i.ToString() + " - " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + " - 👎" + System.Environment.NewLine;
+                        listEmbed.Fields.ElementAt(1).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
+                        //output += i.ToString() + " - " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + " - 👎" + System.Environment.NewLine;
                     }
                 }
 
-                await ctx.RespondAsync(output);
+                await ctx.RespondAsync(embed: listEmbed);
+                //await ctx.RespondAsync(output);
             }
 
             
@@ -240,7 +276,7 @@ namespace AmongUsDriver
             // delete command message.
             await ctx.Message.DeleteAsync();
             await ctx.RespondAsync($"{ctx.Member.Mention}, new code has been set.");
-        
+
         }
 
         [Command("send")]
@@ -324,20 +360,20 @@ namespace AmongUsDriver
 
         // kick
         [Command("kick")]
-        [Description("Kicks a player by id from the game queue.")]
+        [Description("Kicks a player by position from the game queue.")]
         [RequirePermissions(Permissions.MuteMembers)]
-        public async Task Kick(CommandContext ctx, int id)
+        public async Task Kick(CommandContext ctx, int pos)
         {
             
-            if (id > Program.guildToQueue[ctx.Channel.GuildId].Count - 1 || id < 0)
+            if (pos > Program.guildToQueue[ctx.Channel.GuildId].Count - 1 || pos < 0)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! ID is out of bounds.");
                 return;
             }
             else
             {
-                var player = Program.guildToQueue[ctx.Channel.GuildId].ElementAt(id).Mention;
-                Program.guildToQueue[ctx.Channel.GuildId].RemoveAt(id);
+                var player = Program.guildToQueue[ctx.Channel.GuildId].ElementAt(pos).Mention;
+                Program.guildToQueue[ctx.Channel.GuildId].RemoveAt(pos);
                 await ctx.RespondAsync($"{player} has been kicked from the queue.");
             }
 

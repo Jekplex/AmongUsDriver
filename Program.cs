@@ -76,9 +76,13 @@ namespace AmongUsDriver
             // When ready grab all discord servers and add them to the guildToQueue dictionary
             discord.Ready += async e =>
             {
+                //e.Client.Guilds[]
+                //foreach (KeyValuePair<ulong, DiscordGuild> entry in e.Client.Guilds)
+                //{
+                //    //entry.Value.a
+                //}
                 
                 var guildList = e.Client.Guilds.ToList();
-                //var gameQueue = new List<DiscordMember>();
 
                 for (int i = 0; i < guildList.Count; i++)
                 {
@@ -93,20 +97,8 @@ namespace AmongUsDriver
             // In Event of CommandError do this...
             commands.CommandErrored += async e =>
             {
-                switch (e.Command.Name.ToLower())
-                {
-                    case "move":
-                        await e.Context.RespondAsync($"{e.Context.Member.Mention}, the .move command requires a voice channel as an argument.");
-                        break;
-                
-                    default:
-                        await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error!");
-                        break;
-                }
+                await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
             };
-
-            
-
 
             await discord.ConnectAsync();
 
