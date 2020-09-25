@@ -318,8 +318,8 @@ namespace AmongUsDriver
                 }
 
                 //wait for seconds
-                var s = 60;
-                await Task.Delay(1000 * s);
+                var waitTime = 5 * 60 * 1000;
+                await Task.Delay(waitTime);
 
                 // delete messages
                 // loop through dm channels and messages.
