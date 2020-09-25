@@ -14,6 +14,7 @@ namespace AmongUsDriver
     {
         [Command("ping")]
         [Description("Used to check if bot is alive.")]
+        [RequirePermissions(Permissions.MuteMembers)]
         public async Task Ping(CommandContext ctx)
         {
             await ctx.RespondAsync($"{ctx.User.Mention}, pong!");
@@ -152,6 +153,14 @@ namespace AmongUsDriver
 
         }
 
+        /*
+         * 
+         * Below are a set of Game Queue Commands
+         * 
+         */
+
+
+
         // join
         [Command("join")]
         [Description("Adds you to the game queue.")]
@@ -190,6 +199,7 @@ namespace AmongUsDriver
         [Description("Shows the list of players in the game queue.")]
         public async Task List(CommandContext ctx)
         {
+            
             // if queue is empty
             if (Program.guildToQueue[ctx.Channel.GuildId].Count == 0)
             {
@@ -221,6 +231,7 @@ namespace AmongUsDriver
         
         [Command("set")]
         [Description("Sets the game code for queue.")]
+        [RequirePermissions(Permissions.MuteMembers)]
         public async Task Set(CommandContext ctx,[RemainingText()] string code)
         {
             // set code
@@ -228,54 +239,63 @@ namespace AmongUsDriver
 
             // delete command message.
             await ctx.Message.DeleteAsync();
-            await ctx.RespondAsync($"{ctx.Member.Mention}, code has been set.");
+            await ctx.RespondAsync($"{ctx.Member.Mention}, new code has been set.");
         
         }
 
         [Command("send")]
         [Description("Sends the code out to players in the game queue.")]
+        [RequirePermissions(Permissions.MuteMembers)]
         public async Task Send(CommandContext ctx)
         {
             // grabs gamecode
             var code = Program.guildToCode[ctx.Channel.GuildId];
 
-            // grab list of recipients
-            var playerList = Program.guildToQueue[ctx.Channel.GuildId];
-
-            // loop through playerlist, (cap at 10).
-            // save dm channel
-            var dm_channels = new List<DiscordDmChannel>();
-            // send message
-            for (int i = 0; i < playerList.Count; i++)
+            if (code == "")
             {
-                if (i < 10)
-                {
-                    dm_channels.Add(playerList.ElementAt(i).CreateDmChannelAsync().Result);
-                    await playerList.ElementAt(i).SendMessageAsync(
-                        ctx.Guild.Name + " / " + ctx.Member.DisplayName + System.Environment.NewLine + 
-                        Program.guildToCode[ctx.Channel.GuildId].ToUpper()
-                        );
-                }
-                else
-                {
-                    break;
-                }
+                await ctx.RespondAsync($"{ctx.Member.Mention}, no code has been set.");
+                return;
             }
-
-            //wait for seconds
-            var s = 60;
-            await Task.Delay(1000 * s);
-
-            // delete messages
-            // loop through dm channels and messages.
-            for (int i = 0; i < dm_channels.Count(); i++)
+            else
             {
-                //dm_channels[i].
-                var messages = dm_channels.ElementAt(i).GetMessagesAsync(1).Result;
+                // grab list of recipients
+                var playerList = Program.guildToQueue[ctx.Channel.GuildId];
 
-                for (int i2 = 0; i2 <messages.Count; i2++)
+                // loop through playerlist, (cap at 10).
+                // save dm channel
+                var dm_channels = new List<DiscordDmChannel>();
+                // send message
+                for (int i = 0; i < playerList.Count; i++)
                 {
-                    await messages[i2].DeleteAsync(); // deletes message
+                    if (i < 10)
+                    {
+                        dm_channels.Add(playerList.ElementAt(i).CreateDmChannelAsync().Result);
+                        await playerList.ElementAt(i).SendMessageAsync(
+                            ctx.Guild.Name + " / " + ctx.Member.DisplayName + System.Environment.NewLine +
+                            Program.guildToCode[ctx.Channel.GuildId].ToUpper()
+                            );
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                //wait for seconds
+                var s = 60;
+                await Task.Delay(1000 * s);
+
+                // delete messages
+                // loop through dm channels and messages.
+                for (int i = 0; i < dm_channels.Count(); i++)
+                {
+                    //dm_channels[i].
+                    var messages = dm_channels.ElementAt(i).GetMessagesAsync(1).Result;
+
+                    for (int i2 = 0; i2 < messages.Count; i2++)
+                    {
+                        await messages[i2].DeleteAsync(); // deletes message
+                    }
                 }
             }
 
@@ -284,6 +304,7 @@ namespace AmongUsDriver
         // clear
         [Command("clear")]
         [Description("Clears all players in the game queue.")]
+        [RequirePermissions(Permissions.MuteMembers)]
         public async Task Clear(CommandContext ctx)
         {
             // grab guild playerlist then remove everyone from it.
@@ -304,18 +325,20 @@ namespace AmongUsDriver
         // kick
         [Command("kick")]
         [Description("Kicks a player by id from the game queue.")]
+        [RequirePermissions(Permissions.MuteMembers)]
         public async Task Kick(CommandContext ctx, int id)
         {
             
-            if (id > Program.guildToQueue[ctx.Channel.GuildId].Count || id < 0)
+            if (id > Program.guildToQueue[ctx.Channel.GuildId].Count - 1 || id < 0)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! ID is out of bounds.");
                 return;
             }
             else
             {
+                var player = Program.guildToQueue[ctx.Channel.GuildId].ElementAt(id).Mention;
                 Program.guildToQueue[ctx.Channel.GuildId].RemoveAt(id);
-                await ctx.RespondAsync($"{Program.guildToQueue[ctx.Channel.GuildId].ElementAt(id).Mention} has been kicked from the queue.");
+                await ctx.RespondAsync($"{player} has been kicked from the queue.");
             }
 
         }
