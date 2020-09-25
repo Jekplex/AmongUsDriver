@@ -10,7 +10,7 @@ The Among Us Driver!
 
 Terrible name, I know. I couldn't think of anything else to call it.
 
-Want to use?
+How do I add to my discord server?
 -----------
 You can add my bot to your discord server by using the link below.
 
@@ -32,7 +32,7 @@ This bot is currently command based. Would be awesome if the Among Us devs had s
 Features:
 * Can mute and unmute players via command.
 * Can move everyone in your current voice channel to another.
-* Has a game queue (current one per server). Players can .join the queue and moderators can ".set [code]" to set the game code for their lobby. Moderators can then use ".send" to send a dm containing the code to the first 10 players in the list. This is a streamer feature to ensure code doesn't get leaked mid-stream.
+* Can store a game queue (current one per server). Players can .join the queue and moderators can ".set [code]" to set the game code for their lobby. Moderators can then use ".send" to send a dm containing the code to the first 10 players in the list. This is a streamer feature to ensure code doesn't get leaked mid-stream.
 
 Potentially more to come...
 
