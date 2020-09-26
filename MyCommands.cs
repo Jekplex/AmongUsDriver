@@ -1,6 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace AmongUsDriver
     class MyCommands : BaseCommandModule
     {
         [Command("ping")]
+        [Aliases("p")]
         [Description("Used to check if bot is alive.")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task Ping(CommandContext ctx)
@@ -132,7 +134,7 @@ namespace AmongUsDriver
 
             if (targetVoiceChannel == ctx.Member.VoiceState.Channel)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, could not find the voice channel you wish to join. Or you are already in that voice channel.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. Or you are already in that voice channel.");
                 return;
             }
 
@@ -175,6 +177,7 @@ namespace AmongUsDriver
                 Program.guildToQueue[ctx.Channel.GuildId].Add(ctx.Member);
                 await ctx.RespondAsync($"{ctx.User.Mention}, has been added to the queue.");
             }
+
         }
 
         // leave
@@ -199,9 +202,6 @@ namespace AmongUsDriver
         [Description("Shows the list of players in the game queue.")]
         public async Task List(CommandContext ctx)
         {
-            //var goodPlayers;
-            //var badPlayers;
-
             var listEmbed = new DiscordEmbedBuilder
             {
                 Title = "Game Queue",
@@ -210,12 +210,6 @@ namespace AmongUsDriver
             };
 
             listEmbed.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl);
-            //listEmbed.AddField("Players that will recieve game code.", String.Empty, false);
-            //listEmbed.AddField("Players that will NOT recieve game code.", String.Empty, false);
-            //
-            //listEmbed.Fields.ElementAt(0).Value = "Good Players";
-            //listEmbed.Fields.ElementAt(0).Value = "Bad Players";
-            //await ctx.RespondAsync(embed: listEmbed);
 
             // if queue is empty
             if (Program.guildToQueue[ctx.Channel.GuildId].Count == 0)
@@ -225,10 +219,6 @@ namespace AmongUsDriver
             }
             else
             {
-                //string output = "Here's the list of players in the queue:" + System.Environment.NewLine;
-
-                //output += "[ID - Name - HasSeat?]" + System.Environment.NewLine;
-
                 listEmbed.AddField("Players that will recieve game code. 👍", "-", true); 
                 listEmbed.AddField("Players that will NOT recieve game code. 👎", "-", true);
                 
@@ -242,24 +232,21 @@ namespace AmongUsDriver
                     listEmbed.Fields.ElementAt(0).Value = String.Empty;
                 }
 
-
                 for (int i = 0; i < Program.guildToQueue[ctx.Channel.GuildId].Count; i++)
                 {
                     if (i < 10)
                     {
-                        listEmbed.Fields.ElementAt(0).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
-
-                        //output += i.ToString() + " - " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + " - 👍" + System.Environment.NewLine;
+                        //listEmbed.Fields.ElementAt(0).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
+                        listEmbed.Fields.ElementAt(0).Value += $"{i} {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
                     }
                     else
                     {
-                        listEmbed.Fields.ElementAt(1).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
-                        //output += i.ToString() + " - " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + " - 👎" + System.Environment.NewLine;
+                        //listEmbed.Fields.ElementAt(1).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
+                        listEmbed.Fields.ElementAt(1).Value += $"{i} {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
                     }
                 }
 
                 await ctx.RespondAsync(embed: listEmbed);
-                //await ctx.RespondAsync(output);
             }
 
             
@@ -275,7 +262,7 @@ namespace AmongUsDriver
 
             // delete command message.
             await ctx.Message.DeleteAsync();
-            await ctx.RespondAsync($"{ctx.Member.Mention}, new code has been set.");
+            await ctx.RespondAsync($"{ctx.Member.Mention}, your new code has been set.");
 
         }
 
@@ -318,7 +305,7 @@ namespace AmongUsDriver
                 }
 
                 //wait for seconds
-                var waitTime = 5 * 60 * 1000;
+                var waitTime = 5 * 60 * 1000; // Currently 5 minutes
                 await Task.Delay(waitTime);
 
                 // delete messages
@@ -348,12 +335,12 @@ namespace AmongUsDriver
 
             if (Program.guildToQueue[ctx.Channel.GuildId].Count == 0)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, the queue is already empty.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, cannot clear queue as the queue is already empty.");
             }
             else
             {
                 Program.guildToQueue[ctx.Channel.GuildId].Clear();
-                await ctx.RespondAsync($"{ctx.User.Mention}, the queue was cleared.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, the queue is now empty.");
             }
 
         }
@@ -367,7 +354,7 @@ namespace AmongUsDriver
             
             if (pos > Program.guildToQueue[ctx.Channel.GuildId].Count - 1 || pos < 0)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, Error! ID is out of bounds.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, Error! Position is out of bounds.");
                 return;
             }
             else

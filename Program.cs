@@ -29,6 +29,7 @@ namespace AmongUsDriver
             guildToQueue = new Dictionary<ulong, List<DiscordMember>>();
             guildToCode = new Dictionary<ulong, string>();
 
+            // Bot Start
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
@@ -50,60 +51,63 @@ namespace AmongUsDriver
 
                 //UseInternalLogHandler = true,
                 //LogLevel = LogLevel.Debug
+
                 MinimumLogLevel = LogLevel.Debug,
             };
-
             discord = new DiscordClient(discordConfig);
 
-            // Setting up commands config
+            // Commands Config
             var commandsConfig = new CommandsNextConfiguration
             {
                 StringPrefixes = new string[] { configJson.Prefix },
                 IgnoreExtraArguments = false,
             };
-
-            // Setting up commands
             commands = discord.UseCommandsNext(commandsConfig);
+
+            // Linking MyCommands
             commands.RegisterCommands<MyCommands>();
 
-            // Hooking into the event message created
-            //discord.MessageCreated += async e =>
-            //{
-            //    if (e.Message.Content.ToLower().StartsWith("ping"))
-            //        await e.Message.RespondAsync("pong!");
-            //};
-
-            // When ready grab all discord servers and add them to the guildToQueue dictionary
-            discord.Ready += async e =>
-            {
-                //e.Client.Guilds[]
-                //foreach (KeyValuePair<ulong, DiscordGuild> entry in e.Client.Guilds)
-                //{
-                //    //entry.Value.a
-                //}
-                
-                var guildList = e.Client.Guilds.ToList();
-
-                for (int i = 0; i < guildList.Count; i++)
-                {
-                    guildToQueue.Add(guildList.ElementAt(i).Key, new List<DiscordMember>());
-                    guildToCode.Add(guildList.ElementAt(i).Key, "");
-                }
-
-                await Task.CompletedTask;
-
-            };
-
-            // In Event of CommandError do this...
+            // In Event of a command error do this:
             commands.CommandErrored += async e =>
             {
+                Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
                 await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
             };
 
+            // On startup, when guilds become available - do this:
+            discord.GuildAvailable += async e =>
+            {
+                Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
+                Program.guildToCode.Add(e.Guild.Id, "");
+
+                await Task.CompletedTask;
+            };
+
+            // When bot joins a guild...
+            discord.GuildCreated += async e =>
+            {
+                Console.WriteLine($"Joined a new guild: {e.Guild.Name}");
+
+                // Guild Setup
+                Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
+                Program.guildToCode.Add(e.Guild.Id, "");
+
+                await Task.CompletedTask;
+            };
+
+            // When bot leaves or is removed from a guild...
+            discord.GuildDeleted += async e =>
+            {
+                Console.WriteLine($"Left a guild: {e.Guild.Name}");
+
+                Program.guildToQueue.Remove(e.Guild.Id);
+                Program.guildToCode.Remove(e.Guild.Id);
+
+                await Task.CompletedTask;
+            };
+
             await discord.ConnectAsync();
-
             await Task.Delay(-1);
-
         }
 
     }
