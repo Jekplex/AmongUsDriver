@@ -6,18 +6,14 @@ Origin
 
 The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me and I wanted a fix. So... I decided to make one. I called it "Among Us Driver". AUD for short.
 
-How do I add to my discord server?
+How to use
 -----------
 You can add my bot to your discord server by using the link below.
 
 https://discord.com/oauth2/authorize?client_id=757258351146041474&scope=bot&permissions=57687120
 
-Note: This link now has appropriate permissions for the current and potential future usage for this bot. If some permissions are not granted, the bot may not work as intended.
+Note: This link now has appropriate permissions for the current and potential future usage for this bot. If some permissions are not granted, the bot may not work as intended. Also the bot occasionally has development downtime as this is an ongoing project.
 
-This bot occasionally has development downtime as this is an ongoing project. 
-
-How to use?
------------
 The bot's prefix is "."  
 "Moderator" is the person executing the command.
 
