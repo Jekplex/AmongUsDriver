@@ -1,14 +1,10 @@
 # Among Us Driver
-A discord bot for the game Among Us that allows you to mute and unmute all players really quickly.
+An Among Us discord bot that allows you to mute and unmute players really quickly.
 
 Origin
 -----------
 
-The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me. I wanted a fix. So I decided to make one. I present to you...
-
-The Among Us Driver!  
-
-Terrible name, I know. I couldn't think of anything else to call it.
+The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me and I wanted a fix. So... I decided to make one. I called it "Among Us Driver". AUD for short.
 
 How do I add to my discord server?
 -----------
@@ -35,6 +31,8 @@ Features:
 * Can store a game queue (current one per server). Players can .join the queue and moderators can ".set [code]" to set the game code for their lobby. Moderators can then use ".send" to send a dm containing the code to the first 10 players in the list. This is a streamer feature to ensure code doesn't get leaked mid-stream.
 
 Potentially more to come...
+
+If you have any ideas you would like to share. Read the "Contact Me" section. :)
 
 Contact Me
 -----------
