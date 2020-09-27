@@ -28,7 +28,7 @@ Features:
 
 Potentially more to come...
 
-If you have any ideas you would like to share. Read the "Contact Me" section. :)
+I'm openminded to suggestions and constructive criticism. So if you'll like to contact me, please read the contact me section.
 
 Contact Me
 -----------
