@@ -10,7 +10,7 @@ How to use
 -----------
 You can add my bot to your discord server by using the link below.
 
-https://discord.com/oauth2/authorize?client_id=757258351146041474&scope=bot&permissions=57687120
+https://discord.com/api/oauth2/authorize?client_id=757258351146041474&permissions=57703504&scope=bot
 
 Note: This link now has appropriate permissions for the current and potential future usage for this bot. If some permissions are not granted, the bot may not work as intended. Also the bot occasionally has development downtime as this is an ongoing project.
 
