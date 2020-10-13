@@ -1,10 +1,10 @@
-# Among Us Driver (The Among Us Bot)
+# Among Us Driver
 An Among Us discord bot that allows you to mute and unmute players really quickly.
 
 Origin
 -----------
 
-The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me and I wanted a fix. So... I decided to make one. I called it "Among Us Driver", AUD for short.
+The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me and I wanted a fix. So, I decided to make a solution. I called it "Among Us Driver", AUD for short.
 
 How to use
 -----------
@@ -15,20 +15,16 @@ https://discord.com/api/oauth2/authorize?client_id=757258351146041474&permission
 Note: This link now has appropriate permissions for the current and potential future usage for this bot. If some permissions are not granted, the bot may not work as intended. Also the bot occasionally has development downtime as this is an ongoing project.
 
 The bot's prefix is "."  
+Use ".help" for commands. 
 "Moderator" is the person executing the command.
 
-This bot is currently command based. Would be awesome if the Among Us devs had something i could hook into the game that could detect the state of the game. Then muting and unmuting could be automated :)
+Features
+-----------
+* A moderator can mute and unmute players via command.
+* A moderator can move everyone in their current voice channel to another voice channel.
+* Each discord server has a game queue.
 
-* .help for commands.
-
-Features:
-* Can mute and unmute players via command.
-* Can move everyone in your current voice channel to another.
-* Can store a game queue (current one per server). Players can .join the queue and moderators can ".set [code]" to set the game code for their lobby. Moderators can then use ".send" to send a dm containing the code to the first 10 players in the list. This is a streamer feature to ensure code doesn't get leaked mid-stream.
-
-Potentially more to come...
-
-I'm openminded to suggestions and constructive criticism. So if you'll like to contact me, please read the contact me section.
+Game queues allows members of the discord server to join a queue to play Among Us. Moderators can use ".set [code]" to set the game code of the current game lobby. Mods can combine this with ".send" to let the bot send a direct message (with the game code) to the first 10 members in the list. This is a streamer feature to ensure the game code doesn't get leaked mid-stream. 
 
 Contact Me
 -----------
