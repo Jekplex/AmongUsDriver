@@ -46,6 +46,10 @@ Step 1: You’ll need your own config.json file. So create one.
 
 Here you can change the prefix if you would like. Most people should leave “token2” blank. I’ve used it to be able to develop the bot on a different discord app while having the main bot still running and live for people to use. Note: To do this, you’ll have to change the “configJson.token” in Program.cs under Discord Config to “configJson.token2” (For advanced users). 
 
+Step 1.5: Simply be able to work in the .Net framework.
+
+.Net Core 3.1 seems to work fine. So try that or greater.
+
 Step 2: You’ll need to add some DSharpPlus packages from SlimGet. 
 (>= 4.0.0-nightly-00725) 
 
