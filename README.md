@@ -32,4 +32,31 @@ If you would like to contact me, you can reach me over at my discord server. htt
 
 For Developers
 -----------
-Coming Soon...
+In order to host your own version of this bot, there are some prerequisites. 
+
+Step 1: You’ll need your own config.json file. So create one.
+
+```javascript
+{
+  "token": "[Insert Discord Bot Token]",
+  "token2": "[Insert Discord Bot 2 Token]”
+  "prefix": "."
+}
+```
+
+Here you can change the prefix if you would like. Most people should leave “token2” blank. I’ve used it to be able to develop the bot on a different discord app while having the main bot still running and live for people to use. Note: To do this, you’ll have to change the “configJson.token” in Program.cs under Discord Config to “configJson.token2” (For advanced users). 
+
+Step 2: You’ll need to add some DSharpPlus packages from SlimGet. 
+(>= 4.0.0-nightly-00725) 
+
+Packages you'll need:
+* DSharpPlus
+* DSharpPlus.CommandsNext
+* DSharpPlus.Interactivity
+
+**All packages need to be >= 4.0.0-nightly-00725.**
+
+You get these from SlimGet. You’ll need to add their URL to your NuGet sources. URL can be found here: https://nuget.emzi0767.com/gallery/about
+
+Now, you can add the three packages to the project and run. :)
+
