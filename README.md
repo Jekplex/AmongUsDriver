@@ -34,21 +34,27 @@ For Developers
 -----------
 In order to host your own version of this bot, there are some prerequisites. 
 
+Step 0.5: You'll need a discord developer app and a bot attached.
+
+You can make these at in the Discord Developer Portal.
+
 Step 1: You’ll need your own config.json file. So create one.
 
-```javascript
+```json
 {
-  "token": "[Insert Discord Bot Token]",
-  "token2": "[Insert Discord Bot 2 Token]”
-  "prefix": "."
+    "token": "[Insert Discord Bot Token]",
+    "token2": "[Insert Discord Bot 2 Token]",
+    "prefix": "."
 }
 ```
+
+Please replace insert your discord bot token where it say [Insert Discord Bot Token].
 
 Here you can change the prefix if you would like. Most people should leave “token2” blank. I’ve used it to be able to develop the bot on a different discord app while having the main bot still running and live for people to use. Note: To do this, you’ll have to change the “configJson.token” in Program.cs under Discord Config to “configJson.token2” (For advanced users). 
 
 Step 1.5: Simply be able to work in the .Net framework.
 
-.Net Core 3.1 seems to work fine. So try that or greater.
+.Net Core 3.1 seems to work fine. So get that or greater.
 
 Step 2: You’ll need to add some DSharpPlus packages from SlimGet. 
 (>= 4.0.0-nightly-00725) 
