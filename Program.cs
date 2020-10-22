@@ -66,12 +66,24 @@ namespace AmongUsDriver
 
             // Linking MyCommands
             commands.RegisterCommands<MyCommands>();
+            commands.RegisterCommands<FunCommands>();
 
             // In Event of a command error do this:
             commands.CommandErrored += async e =>
             {
+                //if (e.Exception.Data == "_.")
+                //{
+                //    await e.Context.RespondAsync($"._. me too");
+                //}
+                //else
+                //{
+                //    Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
+                //    await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
+                //}
+
                 Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
                 await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
+
             };
 
             // On startup, when guilds become available - do this:

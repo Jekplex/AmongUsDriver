@@ -217,39 +217,63 @@ namespace AmongUsDriver
                 listEmbed.Description += System.Environment.NewLine + System.Environment.NewLine + "The queue is empty.";
                 await ctx.RespondAsync(embed: listEmbed);
             }
+            else if (Program.guildToQueue[ctx.Channel.GuildId].Count <= 10)
+            {
+                listEmbed.AddField("Players that will recieve game code. 👍", "-", true);
+                //listEmbed.AddField("Players that will NOT recieve game code. 👎", "-", true);
+
+                //if (Program.guildToQueue[ctx.Channel.GuildId].Count > 10)
+                //{
+                //    listEmbed.Fields.ElementAt(0).Value = String.Empty;
+                //    listEmbed.Fields.ElementAt(1).Value = String.Empty;
+                //}
+                //else
+                //{
+                //    listEmbed.Fields.ElementAt(0).Value = String.Empty;
+                //}
+                listEmbed.Fields.ElementAt(0).Value = String.Empty;
+
+                for (int i = 0; i < Program.guildToQueue[ctx.Channel.GuildId].Count; i++)
+                {
+                    //if (i < 10)
+                    //{
+                    //    //listEmbed.Fields.ElementAt(0).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
+                    //    listEmbed.Fields.ElementAt(0).Value += $"{i} {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
+                    //}
+                    //else
+                    //{
+                    //    //listEmbed.Fields.ElementAt(1).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
+                    //    listEmbed.Fields.ElementAt(1).Value += $"{i} {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
+                    //}
+                    listEmbed.Fields.ElementAt(0).Value += $"{i+1}. {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
+                }
+
+                await ctx.RespondAsync(embed: listEmbed);
+            }
             else
             {
-                listEmbed.AddField("Players that will recieve game code. 👍", "-", true); 
+                listEmbed.AddField("Players that will recieve game code. 👍", "-", true);
                 listEmbed.AddField("Players that will NOT recieve game code. 👎", "-", true);
-                
-                if (Program.guildToQueue[ctx.Channel.GuildId].Count > 10)
-                {
-                    listEmbed.Fields.ElementAt(0).Value = String.Empty;
-                    listEmbed.Fields.ElementAt(1).Value = String.Empty;
-                }
-                else
-                {
-                    listEmbed.Fields.ElementAt(0).Value = String.Empty;
-                }
+
+                listEmbed.Fields.ElementAt(0).Value = String.Empty;
+                listEmbed.Fields.ElementAt(1).Value = String.Empty;
 
                 for (int i = 0; i < Program.guildToQueue[ctx.Channel.GuildId].Count; i++)
                 {
                     if (i < 10)
                     {
                         //listEmbed.Fields.ElementAt(0).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
-                        listEmbed.Fields.ElementAt(0).Value += $"{i} {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
+                        listEmbed.Fields.ElementAt(0).Value += $"{i+1}. {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
                     }
                     else
                     {
                         //listEmbed.Fields.ElementAt(1).Value += i.ToString() + " " + Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName + System.Environment.NewLine;
-                        listEmbed.Fields.ElementAt(1).Value += $"{i} {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
+                        listEmbed.Fields.ElementAt(1).Value += $"{i+1}. {Program.guildToQueue[ctx.Channel.GuildId].ElementAt(i).DisplayName}{System.Environment.NewLine}";
                     }
                 }
-
-                await ctx.RespondAsync(embed: listEmbed);
             }
 
-            
+
         }
         
         [Command("set")]
@@ -266,11 +290,12 @@ namespace AmongUsDriver
 
         }
 
-        [Command("send")]
+        [Command("send")] // TODO - Modify to send specific participants a game code. 
         [Description("Sends the code out to players in the game queue.")]
         [RequirePermissions(Permissions.MuteMembers)]
-        public async Task Send(CommandContext ctx)
+        public async Task Send(CommandContext ctx, int playerPosition = 0)
         {
+
             // grabs gamecode
             var code = Program.guildToCode[ctx.Channel.GuildId];
 
@@ -281,45 +306,78 @@ namespace AmongUsDriver
             }
             else
             {
-                // grab list of recipients
-                var playerList = Program.guildToQueue[ctx.Channel.GuildId];
 
-                // loop through playerlist, (cap at 10).
-                // save dm channel
-                var dm_channels = new List<DiscordDmChannel>();
-                // send message
-                for (int i = 0; i < playerList.Count; i++)
+                if (playerPosition == 0)
                 {
-                    if (i < 10)
+                    // grab list of recipients
+                    var playerList = Program.guildToQueue[ctx.Channel.GuildId];
+
+                    // loop through playerlist, (cap at 10).
+                    // save dm channel
+                    var dm_channels = new List<DiscordDmChannel>();
+                    // send message
+                    for (int i = 0; i < playerList.Count; i++)
                     {
-                        dm_channels.Add(playerList.ElementAt(i).CreateDmChannelAsync().Result);
-                        await playerList.ElementAt(i).SendMessageAsync(
-                            ctx.Guild.Name + " / " + ctx.Member.DisplayName + System.Environment.NewLine +
-                            Program.guildToCode[ctx.Channel.GuildId].ToUpper()
-                            );
+                        if (i < 10)
+                        {
+                            dm_channels.Add(playerList.ElementAt(i).CreateDmChannelAsync().Result);
+                            await playerList.ElementAt(i).SendMessageAsync(
+                                ctx.Guild.Name + " / " + ctx.Member.DisplayName + System.Environment.NewLine +
+                                Program.guildToCode[ctx.Channel.GuildId].ToUpper()
+                                );
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
+
+                    await ctx.RespondAsync($"{ctx.Member.Mention}, code has been sent to the first 10 players.");
+
+                    //wait for seconds
+                    // minutes * seconds * milliseconds
+                    var waitTime = 10 * 60 * 1000; // Currently 10 minutes
+                    await Task.Delay(waitTime);
+
+                    // delete messages
+                    // loop through dm channels and messages.
+                    for (int i = 0; i < dm_channels.Count(); i++)
                     {
-                        break;
+                        //dm_channels[i].
+                        var messages = dm_channels.ElementAt(i).GetMessagesAsync(2).Result;
+
+                        for (int i2 = 0; i2 < messages.Count; i2++)
+                        {
+                            await messages[i2].DeleteAsync(); // deletes message
+                        }
                     }
                 }
-
-                //wait for seconds
-                var waitTime = 5 * 60 * 1000; // Currently 5 minutes
-                await Task.Delay(waitTime);
-
-                // delete messages
-                // loop through dm channels and messages.
-                for (int i = 0; i < dm_channels.Count(); i++)
+                else
                 {
-                    //dm_channels[i].
-                    var messages = dm_channels.ElementAt(i).GetMessagesAsync(1).Result;
+                    var player = Program.guildToQueue[ctx.Channel.GuildId].ElementAt(playerPosition - 1);
+                    var dm_channel = new List<DiscordDmChannel>();
 
-                    for (int i2 = 0; i2 < messages.Count; i2++)
+                    dm_channel.Add(player.CreateDmChannelAsync().Result);
+                    await player.SendMessageAsync
+                        (ctx.Guild.Name + " / " + ctx.Member.DisplayName + System.Environment.NewLine + Program.guildToCode[ctx.Channel.GuildId].ToUpper());
+
+                    await ctx.RespondAsync($"{ctx.Member.Mention}, code has been sent to {player.Mention}");
+
+
+                    //wait for seconds
+                    // minutes * seconds * milliseconds
+                    var waitTime = 10 * 60 * 1000; // Currently 10 minutes
+                    await Task.Delay(waitTime);
+
+                    var messages = dm_channel.ElementAt(0).GetMessagesAsync(2).Result;
+                    for (int i = 0; i < messages.Count; i++)
                     {
-                        await messages[i2].DeleteAsync(); // deletes message
+                        await messages[i].DeleteAsync();
                     }
+                    
                 }
+
+                
             }
 
         }
@@ -352,15 +410,29 @@ namespace AmongUsDriver
         public async Task Kick(CommandContext ctx, int pos)
         {
             
-            if (pos > Program.guildToQueue[ctx.Channel.GuildId].Count - 1 || pos < 0)
+            //if (pos > Program.guildToQueue[ctx.Channel.GuildId].Count - 1 || pos < 0)
+            //{
+            //    await ctx.RespondAsync($"{ctx.User.Mention}, Error! Position is out of bounds.");
+            //    return;
+            //}
+            //else
+            //{
+            //    var player = Program.guildToQueue[ctx.Channel.GuildId].ElementAt(pos).Mention;
+            //    Program.guildToQueue[ctx.Channel.GuildId].RemoveAt(pos);
+            //    await ctx.RespondAsync($"{player} has been kicked from the queue.");
+            //}
+
+            //
+
+            if (pos > Program.guildToQueue[ctx.Channel.GuildId].Count || pos <= 0)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! Position is out of bounds.");
                 return;
             }
             else
             {
-                var player = Program.guildToQueue[ctx.Channel.GuildId].ElementAt(pos).Mention;
-                Program.guildToQueue[ctx.Channel.GuildId].RemoveAt(pos);
+                var player = Program.guildToQueue[ctx.Channel.GuildId].ElementAt(pos-1).Mention;
+                Program.guildToQueue[ctx.Channel.GuildId].RemoveAt(pos-1);
                 await ctx.RespondAsync($"{player} has been kicked from the queue.");
             }
 
