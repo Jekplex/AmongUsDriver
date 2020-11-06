@@ -1,4 +1,4 @@
-# Among Us Driver
+# Among Us Driver (AUD)
 An Among Us discord bot that allows you to mute and unmute players really quickly.
 
 Origin
