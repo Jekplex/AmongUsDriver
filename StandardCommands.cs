@@ -152,7 +152,30 @@ namespace AmongUsDriver
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left/moved too quickly.");
             }
 
-        } 
+        }
+
+        [Command("cleardms")]
+        [Description("Used to clear your dms with this bot. (Deletes 10 messages)")]
+        public async Task ClearDMS(CommandContext ctx)
+        {
+            var userDM = await ctx.Member.CreateDmChannelAsync();
+            var messages = userDM.GetMessagesAsync(10).Result.ToArray();
+            if (messages.Length < 10)
+            {
+                for (int i = 0; i < messages.Length; i++)
+                {
+                    await messages[i].DeleteAsync();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    await messages[i].DeleteAsync();
+                }
+            }
+
+        }
 
     }
 

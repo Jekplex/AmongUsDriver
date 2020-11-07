@@ -291,16 +291,40 @@ namespace AmongUsDriver
 
         [Command("startgame")]
         [Aliases("sg")]
-        public async Task StartGame(CommandContext ctx,[RemainingText] string code)
+        public async Task StartGame(CommandContext ctx/*,[RemainingText] string code*/)
         {
+            // Validation
+            //if (code == null)
+            //{
+            //    await ctx.RespondAsync($"{ctx.Member.Mention}, cannot start a new game without a code.");
+            //    return;
+            //}
+
+            if (Program.guildToBool[ctx.Guild.Id]) // if active
+            {
+                await ctx.RespondAsync($"{ctx.Member.Mention}. Use .cg to stop current game.");
+                return;
+            }
+
+            // grab interactivity
+            var interactivity = ctx.Client.GetInteractivity();
+
+            Program.guildToBool[ctx.Guild.Id] = true;
+
+            var plsEnterCodeMessage = await ctx.RespondAsync($"{ctx.Member.Mention} Please enter code...");
+
+            var a = await ctx.Channel.GetNextMessageAsync(x => x.Author == ctx.User);
+            var codeMessage = a.Result;
+            var code = codeMessage.Content;
+
             // delete user's message
-            await ctx.Message.DeleteAsync();
+            await codeMessage.DeleteAsync();
 
             // add code to dictionary.
             Program.guildToCode[ctx.Guild.Id] = code;
 
-            // grab interactivity
-            var interactivity = ctx.Client.GetInteractivity();
+            //await plsEnterCodeMessage.ModifyAsync("Code set.");
+            var codeSetMessage = await ctx.RespondAsync("Code set.");
 
             // create embed
             var gameEmbed = new DiscordEmbedBuilder
@@ -310,23 +334,40 @@ namespace AmongUsDriver
                 Color = DiscordColor.Orange,
             };
 
-            // store tick
+            // store tick/x
             var tick = ":white_check_mark:";
             var DiscordEmoji_tick = DiscordEmoji.FromName(ctx.Client, tick);
 
             // Display text to the players
             gameEmbed.Description += Environment.NewLine + Environment.NewLine;
-            gameEmbed.Description += $"{tick} - Ready";
+            gameEmbed.Description += $"{tick} - Ready" + Environment.NewLine;
+            gameEmbed.Description += $":x: - Close" + Environment.NewLine;
 
             // Send embed
             var myMessage = await ctx.RespondAsync(embed: gameEmbed);
 
             // Add tick reaction to embed.
             await myMessage.CreateReactionAsync(DiscordEmoji_tick);
+            await myMessage.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":x:"));
 
             // Rest is handled by (Event Handler) Message Reaction Added.
 
-            
+            // Wait to delete message.
+            await myMessage.WaitForReactionAsync(ctx.User, DiscordEmoji.FromName(ctx.Client, ":x:"));
+            await myMessage.DeleteAsync();
+            await plsEnterCodeMessage.DeleteAsync();
+            await codeSetMessage.DeleteAsync();
+            Program.guildToBool[ctx.Guild.Id] = false;
+
+
+        }
+
+        [Command("stopgame")]
+        [Aliases("cg")]
+        public async Task StopGame(CommandContext ctx)
+        {
+            Program.guildToBool[ctx.Guild.Id] = false;
+            await ctx.RespondAsync($"{ctx.Member.Mention} Success! You can now use .startgame or .sg");
         }
 
     }

@@ -22,7 +22,7 @@ namespace AmongUsDriver
 
         static InteractivityExtension interactivity;
 
-        public static Dictionary<ulong, List<DiscordMember>> guildToQueue;
+        public static Dictionary<ulong, bool> guildToBool;
         public static Dictionary<ulong, string> guildToCode;
 
         static void Main(string[] args)
@@ -30,7 +30,7 @@ namespace AmongUsDriver
             //Console.WriteLine("Hello World!");
 
             // My Dictionaries
-            guildToQueue = new Dictionary<ulong, List<DiscordMember>>();
+            guildToBool = new Dictionary<ulong, bool>();
             guildToCode = new Dictionary<ulong, string>();
 
             // Bot Start
@@ -102,30 +102,36 @@ namespace AmongUsDriver
 
         private static async Task Discord_MessageReactionAdded(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionAddEventArgs e)
         {
-            if (e.Message.Author == discord.CurrentUser && e.Emoji == DiscordEmoji.FromName(sender, ":white_check_mark:") && !e.User.IsBot)
+            if 
+                (
+                e.Message.Author == discord.CurrentUser && 
+                e.Emoji == DiscordEmoji.FromName(sender, ":white_check_mark:") &&
+                !e.User.IsBot &&
+                guildToBool[e.Guild.Id]
+                )
             {
                 //e.User.Id;
                 //e.Guild.CurrentMember.Username;
                 //Members.ContainsKey(e.User.Id).ToString()
                 //await e.Channel.SendMessageAsync(e.User.);
-
-                var member = ((DiscordMember)e.User);
                 //e.Guild.Members.ContainsKey(((DiscordMember)e.User).Id)
 
+
+                var member = ((DiscordMember)e.User);
                 var dmChannel = await member.CreateDmChannelAsync();
 
                 await member.SendMessageAsync
                     (
                         e.Guild.Name + System.Environment.NewLine +
                         Program.guildToCode[e.Guild.Id].ToUpper()
-                    );
+                    ) ;
 
-                var waitTime = 5 * 1000; //currently 5s
-                await Task.Delay(waitTime);
-
-                var messages = await dmChannel.GetMessagesAsync(2);
-                await messages[0].DeleteAsync();
-                await messages[1].DeleteAsync();
+                //var waitTime = 20 * 60 * 1000; //currently 20 minutes
+                //await Task.Delay(waitTime);
+                //
+                //var messages = await dmChannel.GetMessagesAsync(2);
+                //await messages[0].DeleteAsync();
+                //await messages[1].DeleteAsync();
 
             }
         }
@@ -134,7 +140,7 @@ namespace AmongUsDriver
         {
             Console.WriteLine($"Left a guild: {e.Guild.Name}");
             
-            Program.guildToQueue.Remove(e.Guild.Id);
+            Program.guildToBool.Remove(e.Guild.Id);
             Program.guildToCode.Remove(e.Guild.Id);
             
             await Task.CompletedTask;
@@ -145,7 +151,7 @@ namespace AmongUsDriver
             Console.WriteLine($"Joined a new guild: {e.Guild.Name}");
             
             // Guild Setup
-            Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
+            Program.guildToBool.Add(e.Guild.Id, false);
             Program.guildToCode.Add(e.Guild.Id, "");
             
             await Task.CompletedTask;
@@ -153,7 +159,7 @@ namespace AmongUsDriver
 
         private static async Task Discord_GuildAvailable(DiscordClient sender, DSharpPlus.EventArgs.GuildCreateEventArgs e)
         {
-            Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
+            Program.guildToBool.Add(e.Guild.Id, false);
             Program.guildToCode.Add(e.Guild.Id, "");
             
             await Task.CompletedTask;
