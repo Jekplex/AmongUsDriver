@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -14,9 +16,11 @@ namespace AmongUsDriver
 {
     class Program
     {
-        static DiscordClient discord;
+        public static DiscordClient discord;
 
         static CommandsNextExtension commands;
+
+        static InteractivityExtension interactivity;
 
         public static Dictionary<ulong, List<DiscordMember>> guildToQueue;
         public static Dictionary<ulong, string> guildToCode;
@@ -56,6 +60,14 @@ namespace AmongUsDriver
             };
             discord = new DiscordClient(discordConfig);
 
+            // Interactivity Config
+            var interactivityConfig = new InteractivityConfiguration
+            {
+                Timeout = TimeSpan.FromMinutes(5)
+            };
+            interactivity = discord.UseInteractivity();
+
+
             // Commands Config
             var commandsConfig = new CommandsNextConfiguration
             {
@@ -65,62 +77,94 @@ namespace AmongUsDriver
             commands = discord.UseCommandsNext(commandsConfig);
 
             // Linking MyCommands
-            commands.RegisterCommands<MyCommands>();
+            commands.RegisterCommands<StandardCommands>();
             commands.RegisterCommands<FunCommands>();
+            commands.RegisterCommands<GameQueueCommands>();
 
             // In Event of a command error do this:
-            commands.CommandErrored += async e =>
-            {
-                //if (e.Exception.Data == "_.")
-                //{
-                //    await e.Context.RespondAsync($"._. me too");
-                //}
-                //else
-                //{
-                //    Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
-                //    await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
-                //}
-
-                Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
-                await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
-
-            };
+            commands.CommandErrored += Commands_CommandErrored;
 
             // On startup, when guilds become available - do this:
-            discord.GuildAvailable += async e =>
-            {
-                Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
-                Program.guildToCode.Add(e.Guild.Id, "");
-
-                await Task.CompletedTask;
-            };
+            discord.GuildAvailable += Discord_GuildAvailable;
 
             // When bot joins a guild...
-            discord.GuildCreated += async e =>
-            {
-                Console.WriteLine($"Joined a new guild: {e.Guild.Name}");
-
-                // Guild Setup
-                Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
-                Program.guildToCode.Add(e.Guild.Id, "");
-
-                await Task.CompletedTask;
-            };
+            discord.GuildCreated += Discord_GuildCreated;
 
             // When bot leaves or is removed from a guild...
-            discord.GuildDeleted += async e =>
-            {
-                Console.WriteLine($"Left a guild: {e.Guild.Name}");
+            discord.GuildDeleted += Discord_GuildDeleted;
 
-                Program.guildToQueue.Remove(e.Guild.Id);
-                Program.guildToCode.Remove(e.Guild.Id);
-
-                await Task.CompletedTask;
-            };
-
+            discord.MessageReactionAdded += Discord_MessageReactionAdded; ;
+            
+            // Connect and wait infinitely.
             await discord.ConnectAsync();
             await Task.Delay(-1);
         }
 
+        private static async Task Discord_MessageReactionAdded(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionAddEventArgs e)
+        {
+            if (e.Message.Author == discord.CurrentUser && e.Emoji == DiscordEmoji.FromName(sender, ":white_check_mark:") && !e.User.IsBot)
+            {
+                //e.User.Id;
+                //e.Guild.CurrentMember.Username;
+                //Members.ContainsKey(e.User.Id).ToString()
+                //await e.Channel.SendMessageAsync(e.User.);
+
+                var member = ((DiscordMember)e.User);
+                //e.Guild.Members.ContainsKey(((DiscordMember)e.User).Id)
+
+                var dmChannel = await member.CreateDmChannelAsync();
+
+                await member.SendMessageAsync
+                    (
+                        e.Guild.Name + System.Environment.NewLine +
+                        Program.guildToCode[e.Guild.Id].ToUpper()
+                    );
+
+                var waitTime = 5 * 1000; //currently 5s
+                await Task.Delay(waitTime);
+
+                var messages = await dmChannel.GetMessagesAsync(2);
+                await messages[0].DeleteAsync();
+                await messages[1].DeleteAsync();
+
+            }
+        }
+
+        private static async Task Discord_GuildDeleted(DiscordClient sender, DSharpPlus.EventArgs.GuildDeleteEventArgs e)
+        {
+            Console.WriteLine($"Left a guild: {e.Guild.Name}");
+            
+            Program.guildToQueue.Remove(e.Guild.Id);
+            Program.guildToCode.Remove(e.Guild.Id);
+            
+            await Task.CompletedTask;
+        }
+
+        private static async Task Discord_GuildCreated(DiscordClient sender, DSharpPlus.EventArgs.GuildCreateEventArgs e)
+        {
+            Console.WriteLine($"Joined a new guild: {e.Guild.Name}");
+            
+            // Guild Setup
+            Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
+            Program.guildToCode.Add(e.Guild.Id, "");
+            
+            await Task.CompletedTask;
+        }
+
+        private static async Task Discord_GuildAvailable(DiscordClient sender, DSharpPlus.EventArgs.GuildCreateEventArgs e)
+        {
+            Program.guildToQueue.Add(e.Guild.Id, new List<DiscordMember>());
+            Program.guildToCode.Add(e.Guild.Id, "");
+            
+            await Task.CompletedTask;
+
+        }
+
+        private static async Task Commands_CommandErrored(CommandsNextExtension sender, CommandErrorEventArgs e)
+        {
+            Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
+            await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
+
+        }
     }
 }
