@@ -79,7 +79,7 @@ namespace AmongUsDriver
             // Linking MyCommands
             commands.RegisterCommands<StandardCommands>();
             commands.RegisterCommands<FunCommands>();
-            commands.RegisterCommands<GameQueueCommands>();
+            commands.RegisterCommands<GameCommands>();
 
             // In Event of a command error do this:
             commands.CommandErrored += Commands_CommandErrored;
@@ -111,18 +111,13 @@ namespace AmongUsDriver
                 guildToBool[e.Guild.Id]
                 )
             {
-                //e.User.Id;
-                //e.Guild.CurrentMember.Username;
-                //Members.ContainsKey(e.User.Id).ToString()
-                //await e.Channel.SendMessageAsync(e.User.);
-                //e.Guild.Members.ContainsKey(((DiscordMember)e.User).Id)
-
-
+                                  
                 var member = ((DiscordMember)e.User);
 
                 await member.SendMessageAsync
                     (
-                        $"From: {e.Guild.Name}\n{Program.guildToCode[e.Guild.Id].ToUpper()}"
+                        $"From: {e.Guild.Name}\n" +
+                        $"{Program.guildToCode[e.Guild.Id].ToUpper()}"
                     ) ;
 
             }
