@@ -122,7 +122,7 @@ namespace AmongUsDriver
 
                 await member.SendMessageAsync
                     (
-                        $"Among Us Code\nServer: {e.Guild.Name}\n{Program.guildToCode[e.Guild.Id].ToUpper()}"
+                        $"From: {e.Guild.Name}\n{Program.guildToCode[e.Guild.Id].ToUpper()}"
                     ) ;
 
             }
