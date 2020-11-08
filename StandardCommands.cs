@@ -155,7 +155,7 @@ namespace AmongUsDriver
         }
 
         [Command("cleardms")]
-        [Description("Used to clear your dms with this bot. (Deletes 10 messages)")]
+        [Description("Used to clear your dms with this bot. (Deletes max 10 messages per command.)")]
         public async Task ClearDMS(CommandContext ctx)
         {
             var userDM = await ctx.Member.CreateDmChannelAsync();

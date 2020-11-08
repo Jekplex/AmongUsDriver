@@ -93,6 +93,7 @@ namespace AmongUsDriver
             // When bot leaves or is removed from a guild...
             discord.GuildDeleted += Discord_GuildDeleted;
 
+            // When a reaction is added to any message...
             discord.MessageReactionAdded += Discord_MessageReactionAdded; ;
             
             // Connect and wait infinitely.
@@ -105,7 +106,7 @@ namespace AmongUsDriver
             if 
                 (
                 e.Message.Author == discord.CurrentUser && 
-                e.Emoji == DiscordEmoji.FromName(sender, ":white_check_mark:") &&
+                e.Emoji == DiscordEmoji.FromName(discord, ":white_check_mark:") &&
                 !e.User.IsBot &&
                 guildToBool[e.Guild.Id]
                 )
@@ -118,20 +119,11 @@ namespace AmongUsDriver
 
 
                 var member = ((DiscordMember)e.User);
-                var dmChannel = await member.CreateDmChannelAsync();
 
                 await member.SendMessageAsync
                     (
-                        e.Guild.Name + System.Environment.NewLine +
-                        Program.guildToCode[e.Guild.Id].ToUpper()
+                        $"Among Us Code\nServer: {e.Guild.Name}\n{Program.guildToCode[e.Guild.Id].ToUpper()}"
                     ) ;
-
-                //var waitTime = 20 * 60 * 1000; //currently 20 minutes
-                //await Task.Delay(waitTime);
-                //
-                //var messages = await dmChannel.GetMessagesAsync(2);
-                //await messages[0].DeleteAsync();
-                //await messages[1].DeleteAsync();
 
             }
         }
