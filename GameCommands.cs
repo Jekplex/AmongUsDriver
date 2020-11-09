@@ -16,35 +16,28 @@ namespace AmongUsDriver
 
         [Command("startgame")]
         [Aliases("sg")]
-        public async Task StartGame(CommandContext ctx/*,[RemainingText] string code*/)
+        public async Task StartGame(CommandContext ctx,[RemainingText] string code)
         {
             // validation
+            if (code == null)
+            {
+                await ctx.RespondAsync($"{ctx.Member.Mention} Cannot start a game without a game code.");
+                return;
+            } 
             if (Program.guildToBool[ctx.Guild.Id]) // if guild active
             {
                 await ctx.RespondAsync($"{ctx.Member.Mention} A game already exists. Close the game by reacting: :x:");
                 return;
             }
 
-            // grab interactivity
-            var interactivity = ctx.Client.GetInteractivity();
+            // delete user's message (code entered)
+            await ctx.Message.DeleteAsync();
 
             // enable guild bool
             Program.guildToBool[ctx.Guild.Id] = true;
 
-            // grab code
-            var plsEnterCodeMessage = await ctx.RespondAsync($"{ctx.Member.Mention} Please enter code...");
-            var a = await ctx.Channel.GetNextMessageAsync(x => x.Author == ctx.User);
-            var codeMessage = a.Result;
-            var code = codeMessage.Content;
-
-            // delete user's message (code entered)
-            await codeMessage.DeleteAsync();
-
             // add code to dictionary.
             Program.guildToCode[ctx.Guild.Id] = code;
-
-            // notify user code is set.
-            var codeSetMessage = await ctx.RespondAsync("Code set.");
 
             // create game embed
             var gameEmbed = new DiscordEmbedBuilder
@@ -74,15 +67,11 @@ namespace AmongUsDriver
 
             // Rest is handled by (Event Handler) Message Reaction Added.
 
-            // Wait to delete message.
+            // Wait to delete. Or delete when member who made game closes.
             await myMessage.WaitForReactionAsync(ctx.User, x_emoji, TimeSpan.FromHours(1f));
             
             // Delete all messages
             await myMessage.DeleteAsync();
-            await codeSetMessage.DeleteAsync();
-            await plsEnterCodeMessage.DeleteAsync();
-            await ctx.Message.DeleteAsync();
-            
             Program.guildToBool[ctx.Guild.Id] = false;
 
         }
