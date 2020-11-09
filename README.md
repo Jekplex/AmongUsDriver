@@ -4,8 +4,8 @@ An Among Us discord bot that allows you to mute and unmute players really quickl
 Origin
 -----------
 
-The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me and I wanted a fix. So, I decided to make a solution. I called it "Among Us Driver", AUD for short.
-
+The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me and I wanted a fix. So, I decided to make my own solution. I called it "Among Us Driver", AUD for short.
+<!--
 How to use
 -----------
 You can add my bot to your discord server by using the link below.
@@ -17,7 +17,7 @@ Note: This link now has appropriate permissions for the current and potential fu
 The bot's prefix is "."  
 Use ".help" for commands. 
 "Moderator" is the person executing the command.
-
+-->
 Features
 -----------
 * A moderator can mute and unmute players via command.
