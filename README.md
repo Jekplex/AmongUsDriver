@@ -40,15 +40,14 @@ Step 1: You’ll need your own config.json file. So create one.
 
 ```json
 {
-    "token": "[Insert Discord Bot Token]",
-    "token2": "[Insert Discord Bot 2 Token]",
-    "prefix": "."
+
+    "prefix": ".",
+    "token": "[Insert Discord Bot Token]"
+
 }
 ```
 
-Please replace insert your discord bot token where it says [Insert Discord Bot Token].
-
-Here you can change the prefix if you would like. Most people shouldn't touch “token2”. I’ve used it to be able to develop the bot on a different discord app while having the main bot still running and live for people to use. Not recommended.
+Please replace insert your discord bot token where it says [Insert Discord Bot Token]. Here you can change the prefix if you would like.
 
 Step 1.5: Simply be able to work in the .Net Core framework.
 
