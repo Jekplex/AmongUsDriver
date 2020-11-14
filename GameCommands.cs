@@ -21,20 +21,20 @@ namespace AmongUsDriver
             // validation
             if (code == null)
             {
-                await ctx.RespondAsync($"{ctx.Member.Mention} Cannot start a game without a game code.");
+                await ctx.RespondAsync($"{ctx.Member.Mention} Cannot start a game without a game code.").ConfigureAwait(false);
                 return;
             } 
-            if (Program.guildToBool[ctx.Guild.Id]) // if guild active
+            if (Program.guildToBool_IsGameInProgress[ctx.Guild.Id]) // if guild active
             {
-                await ctx.RespondAsync($"{ctx.Member.Mention} A game already exists. Close the game by reacting: :x:");
+                await ctx.RespondAsync($"{ctx.Member.Mention} A game already exists. Close the game by reacting: :x:").ConfigureAwait(false);
                 return;
             }
 
             // delete user's message (code entered)
-            await ctx.Message.DeleteAsync();
+            await ctx.Message.DeleteAsync().ConfigureAwait(false);
 
             // enable guild bool
-            Program.guildToBool[ctx.Guild.Id] = true;
+            Program.guildToBool_IsGameInProgress[ctx.Guild.Id] = true;
 
             // add code to dictionary.
             Program.guildToCode[ctx.Guild.Id] = code;
@@ -59,20 +59,20 @@ namespace AmongUsDriver
             gameEmbed.Description += $"{x} - Cancel" + Environment.NewLine;
 
             // display game embed
-            var myMessage = await ctx.RespondAsync(embed: gameEmbed);
+            var myMessage = await ctx.RespondAsync(embed: gameEmbed).ConfigureAwait(false);
 
             // add tick reaction to embed.
-            await myMessage.CreateReactionAsync(tick_emoji);
-            await myMessage.CreateReactionAsync(x_emoji);
+            await myMessage.CreateReactionAsync(tick_emoji).ConfigureAwait(false);
+            await myMessage.CreateReactionAsync(x_emoji).ConfigureAwait(false);
 
             // Rest is handled by (Event Handler) Message Reaction Added.
 
             // Wait to delete. Or delete when member who made game closes.
-            await myMessage.WaitForReactionAsync(ctx.User, x_emoji, TimeSpan.FromHours(1f));
+            await myMessage.WaitForReactionAsync(ctx.User, x_emoji, TimeSpan.FromHours(1f)).ConfigureAwait(false);
             
             // Delete all messages
-            await myMessage.DeleteAsync();
-            Program.guildToBool[ctx.Guild.Id] = false;
+            await myMessage.DeleteAsync().ConfigureAwait(false);
+            Program.guildToBool_IsGameInProgress[ctx.Guild.Id] = false;
 
         }
 

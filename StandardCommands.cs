@@ -18,7 +18,7 @@ namespace AmongUsDriver
         [Description("Used to check if the bot is alive.")]
         public async Task Ping(CommandContext ctx)
         {
-            await ctx.RespondAsync($"{ctx.User.Mention}, pong!");
+            await ctx.RespondAsync($"{ctx.User.Mention}, pong!").ConfigureAwait(false);
         }
 
         [Command("mute")]
@@ -30,25 +30,25 @@ namespace AmongUsDriver
 
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.").ConfigureAwait(false);
             }
             else
             {
-                var playerList = ctx.Member.VoiceState.Channel.Users.ToArray();
 
                 try
                 {
-                    for (int i = 0; i < playerList.Length; i++)
+                    foreach(var member in ctx.Member.VoiceState.Channel.Users)
                     {
-                        await playerList[i].SetMuteAsync(true);
+                        await member.SetMuteAsync(true).ConfigureAwait(false);
                     }
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Muted.");
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Muted.").ConfigureAwait(false);
                 }
                 catch
                 {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.").ConfigureAwait(false);
                 }
-                
+
+
             }
 
         }
@@ -62,25 +62,23 @@ namespace AmongUsDriver
 
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.").ConfigureAwait(false);
             }
             else
             {
-                var playerList = ctx.Member.VoiceState.Channel.Users.ToArray();
-
                 try
                 {
-                    for (int i = 0; i < playerList.Length; i++)
+                    foreach (var member in ctx.Member.VoiceState.Channel.Users)
                     {
-                        await playerList[i].SetMuteAsync(false);
+                        await member.SetMuteAsync(false).ConfigureAwait(false);
                     }
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Unmuted.");
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Muted.").ConfigureAwait(false);
                 }
                 catch
                 {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.").ConfigureAwait(false);
                 }
-                
+
             }
 
         }
@@ -94,7 +92,7 @@ namespace AmongUsDriver
             // before doing these instructions check if player is even present a voice channel.
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.").ConfigureAwait(false);
                 return;
             }
 
@@ -133,7 +131,7 @@ namespace AmongUsDriver
 
             if (targetVoiceChannel == ctx.Member.VoiceState.Channel)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. Or you are already in that voice channel.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. Or you are already in that voice channel.").ConfigureAwait(false);
                 return;
             }
 
@@ -142,14 +140,15 @@ namespace AmongUsDriver
 
             try
             {
-                for (int i = 0; i < membersInCurrentVoiceChannel.Length; i++)
+                foreach (var member in ctx.Member.VoiceState.Channel.Users)
                 {
-                    await membersInCurrentVoiceChannel[i].PlaceInAsync(targetVoiceChannel);
+                    await member.PlaceInAsync(targetVoiceChannel).ConfigureAwait(false);
                 }
+                await ctx.RespondAsync($"{ctx.User.Mention}, Moved.").ConfigureAwait(false);
             }
             catch
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left/moved too quickly.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.").ConfigureAwait(false);
             }
 
         }
@@ -158,20 +157,20 @@ namespace AmongUsDriver
         [Description("Used to clear your dms with this bot. (Deletes max 10 messages per command.)")]
         public async Task ClearDMS(CommandContext ctx)
         {
-            var userDM = await ctx.Member.CreateDmChannelAsync();
+            var userDM = await ctx.Member.CreateDmChannelAsync().ConfigureAwait(false);
             var messages = userDM.GetMessagesAsync(10).Result.ToArray();
             if (messages.Length < 10)
             {
                 for (int i = 0; i < messages.Length; i++)
                 {
-                    await messages[i].DeleteAsync();
+                    await messages[i].DeleteAsync().ConfigureAwait(false);
                 }
             }
             else
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    await messages[i].DeleteAsync();
+                    await messages[i].DeleteAsync().ConfigureAwait(false);
                 }
             }
 

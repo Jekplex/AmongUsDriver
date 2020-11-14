@@ -16,13 +16,13 @@ namespace AmongUsDriver
 {
     class Program
     {
-        public static DiscordClient discord;
+        static DiscordClient discord; // Sharded client?
 
         static CommandsNextExtension commands;
 
         static InteractivityExtension interactivity;
 
-        public static Dictionary<ulong, bool> guildToBool;
+        public static Dictionary<ulong, bool> guildToBool_IsGameInProgress;
         public static Dictionary<ulong, string> guildToCode;
 
         static void Main(string[] args)
@@ -30,20 +30,20 @@ namespace AmongUsDriver
             //Console.WriteLine("Hello World!");
 
             // My Dictionaries
-            guildToBool = new Dictionary<ulong, bool>();
+            guildToBool_IsGameInProgress = new Dictionary<ulong, bool>();
             guildToCode = new Dictionary<ulong, string>();
 
             // Bot Start
-            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
+            MainAsync().GetAwaiter().GetResult();
         }
 
-        static async Task MainAsync(string[] args)
+        static async Task MainAsync()
         {
             // Reads token and prefix from config.json located in project dir.
             var json = string.Empty;
             using (var fs = File.OpenRead("config.json"))
             using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-                json = await sr.ReadToEndAsync().ConfigureAwait(false);
+                json = await sr.ReadToEndAsync();
 
             var configJson = JsonConvert.DeserializeObject<ConfigJson>(json);
 
@@ -52,11 +52,12 @@ namespace AmongUsDriver
             {
                 Token = configJson.Token,
                 TokenType = TokenType.Bot,
+                MinimumLogLevel = LogLevel.Debug,
+                LogTimestampFormat = "MMM dd yyyy - hh:mm:ss tt"
 
                 //UseInternalLogHandler = true,
                 //LogLevel = LogLevel.Debug
-
-                MinimumLogLevel = LogLevel.Debug,
+                //MinimumLogLevel = LogLevel.Debug,
             };
             discord = new DiscordClient(discordConfig);
 
@@ -66,7 +67,6 @@ namespace AmongUsDriver
                 Timeout = TimeSpan.FromMinutes(5)
             };
             interactivity = discord.UseInteractivity();
-
 
             // Commands Config
             var commandsConfig = new CommandsNextConfiguration
@@ -103,31 +103,32 @@ namespace AmongUsDriver
 
         private static async Task Discord_MessageReactionAdded(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionAddEventArgs e)
         {
-            if 
+
+            if
                 (
-                e.Message.Author == discord.CurrentUser && 
+                e.Message.Author == discord.CurrentUser &&
                 e.Emoji == DiscordEmoji.FromName(discord, ":white_check_mark:") &&
                 !e.User.IsBot &&
-                guildToBool[e.Guild.Id]
+                guildToBool_IsGameInProgress[e.Guild.Id]
                 )
             {
-                                  
+
                 var member = ((DiscordMember)e.User);
 
                 await member.SendMessageAsync
                     (
                         $"From: {e.Guild.Name}\n" +
                         $"{Program.guildToCode[e.Guild.Id].ToUpper()}"
-                    ) ;
-
+                    );
             }
+
         }
 
         private static async Task Discord_GuildDeleted(DiscordClient sender, DSharpPlus.EventArgs.GuildDeleteEventArgs e)
         {
             Console.WriteLine($"Left a guild: {e.Guild.Name}");
             
-            Program.guildToBool.Remove(e.Guild.Id);
+            Program.guildToBool_IsGameInProgress.Remove(e.Guild.Id);
             Program.guildToCode.Remove(e.Guild.Id);
             
             await Task.CompletedTask;
@@ -138,7 +139,7 @@ namespace AmongUsDriver
             Console.WriteLine($"Joined a new guild: {e.Guild.Name}");
             
             // Guild Setup
-            Program.guildToBool.Add(e.Guild.Id, false);
+            Program.guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
             Program.guildToCode.Add(e.Guild.Id, "");
             
             await Task.CompletedTask;
@@ -146,7 +147,8 @@ namespace AmongUsDriver
 
         private static async Task Discord_GuildAvailable(DiscordClient sender, DSharpPlus.EventArgs.GuildCreateEventArgs e)
         {
-            Program.guildToBool.Add(e.Guild.Id, false);
+            // Guild Setup
+            Program.guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
             Program.guildToCode.Add(e.Guild.Id, "");
             
             await Task.CompletedTask;
@@ -155,7 +157,7 @@ namespace AmongUsDriver
 
         private static async Task Commands_CommandErrored(CommandsNextExtension sender, CommandErrorEventArgs e)
         {
-            Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
+            //Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
             await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
 
         }
