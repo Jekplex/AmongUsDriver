@@ -101,7 +101,7 @@ namespace AmongUsDriver
             // BOT 'LISTENING' 'PLAYING' 'STREAMING...
             DiscordActivity discordActivity = new DiscordActivity();
             discordActivity.ActivityType = ActivityType.Playing;
-            discordActivity.Name = "Among Us w/ noisy people";
+            discordActivity.Name = "Among Us";
             
             // Connect and wait infinitely.
             await discord.ConnectAsync(discordActivity);
