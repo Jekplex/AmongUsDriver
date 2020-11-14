@@ -14,7 +14,7 @@ namespace AmongUsDriver
         [Hidden()]
         public async Task LowFlatFace(CommandContext ctx, [RemainingText()] string extra)
         {
-            await ctx.RespondAsync($"._. (me too)").ConfigureAwait(false);
+            await ctx.RespondAsync($"._. (me too)");
         }
 
     }
