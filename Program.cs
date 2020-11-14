@@ -55,6 +55,8 @@ namespace AmongUsDriver
                 MinimumLogLevel = LogLevel.Debug,
                 LogTimestampFormat = "MMM dd yyyy - hh:mm:ss tt"
 
+                
+
                 //UseInternalLogHandler = true,
                 //LogLevel = LogLevel.Debug
                 //MinimumLogLevel = LogLevel.Debug,
@@ -94,10 +96,15 @@ namespace AmongUsDriver
             discord.GuildDeleted += Discord_GuildDeleted;
 
             // When a reaction is added to any message...
-            discord.MessageReactionAdded += Discord_MessageReactionAdded; ;
+            discord.MessageReactionAdded += Discord_MessageReactionAdded;
+
+            // BOT 'LISTENING' 'PLAYING' 'STREAMING...
+            DiscordActivity discordActivity = new DiscordActivity();
+            discordActivity.ActivityType = ActivityType.Playing;
+            discordActivity.Name = "Among Us w/ noisy people";
             
             // Connect and wait infinitely.
-            await discord.ConnectAsync();
+            await discord.ConnectAsync(discordActivity);
             await Task.Delay(-1);
         }
 
