@@ -16,7 +16,7 @@ namespace AmongUsDriver
 {
     class Program
     {
-        static DiscordClient discord; // Sharded client?
+        static DiscordClient discord; // DiscordClient or DiscordShardedClient?
 
         static CommandsNextExtension commands;
 

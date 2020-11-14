@@ -18,7 +18,7 @@ namespace AmongUsDriver
         [Description("Used to check if the bot is alive.")]
         public async Task Ping(CommandContext ctx)
         {
-            await ctx.RespondAsync($"{ctx.User.Mention}, pong!").ConfigureAwait(false);
+            await ctx.RespondAsync($"{ctx.User.Mention}, pong!");
         }
 
         [Command("mute")]
@@ -30,7 +30,7 @@ namespace AmongUsDriver
 
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.").ConfigureAwait(false);
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
             }
             else
             {
@@ -39,13 +39,13 @@ namespace AmongUsDriver
                 {
                     foreach(var member in ctx.Member.VoiceState.Channel.Users)
                     {
-                        await member.SetMuteAsync(true).ConfigureAwait(false);
+                        await member.SetMuteAsync(true);
                     }
                     await ctx.RespondAsync($"{ctx.User.Mention}, Muted.").ConfigureAwait(false);
                 }
                 catch
                 {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.").ConfigureAwait(false);
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
                 }
 
 
@@ -62,7 +62,7 @@ namespace AmongUsDriver
 
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.").ConfigureAwait(false);
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
             }
             else
             {
@@ -70,13 +70,13 @@ namespace AmongUsDriver
                 {
                     foreach (var member in ctx.Member.VoiceState.Channel.Users)
                     {
-                        await member.SetMuteAsync(false).ConfigureAwait(false);
+                        await member.SetMuteAsync(false);
                     }
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Muted.").ConfigureAwait(false);
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Unmuted.");
                 }
                 catch
                 {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.").ConfigureAwait(false);
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
                 }
 
             }
@@ -92,7 +92,7 @@ namespace AmongUsDriver
             // before doing these instructions check if player is even present a voice channel.
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.").ConfigureAwait(false);
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
                 return;
             }
 
@@ -131,7 +131,7 @@ namespace AmongUsDriver
 
             if (targetVoiceChannel == ctx.Member.VoiceState.Channel)
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. Or you are already in that voice channel.").ConfigureAwait(false);
+                await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. (Or you are already in that voice channel).");
                 return;
             }
 
@@ -142,13 +142,13 @@ namespace AmongUsDriver
             {
                 foreach (var member in ctx.Member.VoiceState.Channel.Users)
                 {
-                    await member.PlaceInAsync(targetVoiceChannel).ConfigureAwait(false);
+                    await member.PlaceInAsync(targetVoiceChannel);
                 }
-                await ctx.RespondAsync($"{ctx.User.Mention}, Moved.").ConfigureAwait(false);
+                await ctx.RespondAsync($"{ctx.User.Mention}, Moved.");
             }
             catch
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.").ConfigureAwait(false);
+                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
             }
 
         }
@@ -163,17 +163,18 @@ namespace AmongUsDriver
             {
                 for (int i = 0; i < messages.Length; i++)
                 {
-                    await messages[i].DeleteAsync().ConfigureAwait(false);
+                    await messages[i].DeleteAsync();
                 }
             }
             else
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    await messages[i].DeleteAsync().ConfigureAwait(false);
+                    await messages[i].DeleteAsync();
                 }
             }
 
+            await ctx.RespondAsync($"{ctx.User.Mention} Deleted some dms.");
         }
 
     }
