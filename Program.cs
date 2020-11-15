@@ -100,13 +100,12 @@ namespace AmongUsDriver
 
             // When a reaction is added to any message...
             discord.MessageReactionAdded += Discord_MessageReactionAdded;
-            
-            
+
             // BOT 'LISTENING' 'PLAYING' 'STREAMING...
             DiscordActivity discordActivity = new DiscordActivity();
             discordActivity.ActivityType = ActivityType.Playing;
-            discordActivity.Name = "Among Us";
-            
+            discordActivity.Name = "Among Us | .help";
+
             // Connect and wait infinitely.
             await discord.ConnectAsync(discordActivity);
             await Task.Delay(-1);

@@ -1,4 +1,4 @@
-﻿using DSharpPlus;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Converters;
@@ -33,14 +33,15 @@ namespace AmongUsDriver
             }
             else
             {
-                await Program.discord.ReconnectAsync();
+                await ctx.RespondAsync(". . .");
+
                 try
                 {
                     foreach(var member in ctx.Member.VoiceState.Channel.Users)
                     {
                         await member.SetMuteAsync(true);
                     }
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Muted.").ConfigureAwait(false);
+                    await ctx.RespondAsync($"{ctx.User.Mention}, All muted.");
                 }
                 catch
                 {
@@ -58,7 +59,6 @@ namespace AmongUsDriver
         [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
         public async Task Unmute(CommandContext ctx)
         {
-            
 
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
@@ -66,19 +66,22 @@ namespace AmongUsDriver
             }
             else
             {
-                await Program.discord.ReconnectAsync();
+
+                await ctx.RespondAsync(". . .");
+
                 try
                 {
                     foreach (var member in ctx.Member.VoiceState.Channel.Users)
                     {
                         await member.SetMuteAsync(false);
                     }
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Unmuted.");
+                    await ctx.RespondAsync($"{ctx.User.Mention}, All unmuted.");
                 }
                 catch
                 {
                     await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
                 }
+
 
             }
 
@@ -89,6 +92,7 @@ namespace AmongUsDriver
         [RequirePermissions(DSharpPlus.Permissions.MoveMembers)]
         public async Task Move(CommandContext ctx, [RemainingText()] string voice_channel)
         {
+            await ctx.RespondAsync(". . .");
 
             // before doing these instructions check if player is even present a voice channel.
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
@@ -129,7 +133,6 @@ namespace AmongUsDriver
             }
 
             // if not found then return error else...
-
             if (targetVoiceChannel == ctx.Member.VoiceState.Channel)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. (Or you are already in that voice channel).");
@@ -141,15 +144,17 @@ namespace AmongUsDriver
 
             try
             {
-                foreach (var member in ctx.Member.VoiceState.Channel.Users)
+                foreach (var member in membersInCurrentVoiceChannel)
                 {
+
                     await member.PlaceInAsync(targetVoiceChannel);
+
                 }
-                await ctx.RespondAsync($"{ctx.User.Mention}, Moved.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, All moved.");
             }
             catch
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
+                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly. (Or not everyone has permissions to access that room.)");
             }
 
         }
@@ -158,7 +163,9 @@ namespace AmongUsDriver
         [Description("Used to clear your dms with this bot. (Deletes max 10 messages per command.)")]
         public async Task ClearDMS(CommandContext ctx)
         {
-            var userDM = await ctx.Member.CreateDmChannelAsync().ConfigureAwait(false);
+            await ctx.RespondAsync($". . .");
+
+            var userDM = await ctx.Member.CreateDmChannelAsync();
             var messages = userDM.GetMessagesAsync(10).Result.ToArray();
             if (messages.Length < 10)
             {
@@ -176,6 +183,27 @@ namespace AmongUsDriver
             }
 
             await ctx.RespondAsync($"{ctx.User.Mention} Deleted some dms.");
+        }
+
+        [Command("refresh")]
+        [Aliases("r")]
+        [Description("")]
+        public async Task Refresh(CommandContext ctx)
+        {
+        
+            await ctx.RespondAsync(". . .");
+        
+            await Program.discord.DisconnectAsync();
+        
+            // BOT 'LISTENING' 'PLAYING' 'STREAMING...
+            DiscordActivity discordActivity = new DiscordActivity();
+            discordActivity.ActivityType = ActivityType.Playing;
+            discordActivity.Name = "Among Us | .help";
+        
+            await Program.discord.ConnectAsync(discordActivity);
+        
+            await ctx.RespondAsync("Refreshed.");
+
         }
 
     }
