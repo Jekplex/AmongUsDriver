@@ -27,14 +27,13 @@ namespace AmongUsDriver
         [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
         public async Task Mute(CommandContext ctx)
         {
-
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
             }
             else
             {
-
+                await Program.discord.InitializeAsync();
                 try
                 {
                     foreach(var member in ctx.Member.VoiceState.Channel.Users)
@@ -59,6 +58,7 @@ namespace AmongUsDriver
         [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
         public async Task Unmute(CommandContext ctx)
         {
+            
 
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
@@ -66,6 +66,7 @@ namespace AmongUsDriver
             }
             else
             {
+                await Program.discord.InitializeAsync();
                 try
                 {
                     foreach (var member in ctx.Member.VoiceState.Channel.Users)
