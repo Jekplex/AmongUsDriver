@@ -33,7 +33,7 @@ namespace AmongUsDriver
             }
             else
             {
-                await Program.discord.InitializeAsync();
+                await Program.discord.ReconnectAsync();
                 try
                 {
                     foreach(var member in ctx.Member.VoiceState.Channel.Users)
@@ -66,7 +66,7 @@ namespace AmongUsDriver
             }
             else
             {
-                await Program.discord.InitializeAsync();
+                await Program.discord.ReconnectAsync();
                 try
                 {
                     foreach (var member in ctx.Member.VoiceState.Channel.Users)
