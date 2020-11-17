@@ -250,22 +250,23 @@ namespace AmongUsDriver
         public async Task Refresh(CommandContext ctx)
         {
 
-            //await ctx.RespondAsync(". . .");
-            //
-            //await Program.discord.DisconnectAsync();
-            //
-            //// BOT 'LISTENING' 'PLAYING' 'STREAMING...
-            //DiscordActivity discordActivity = new DiscordActivity();
-            //discordActivity.ActivityType = ActivityType.Playing;
-            //discordActivity.Name = "Among Us | .help";
-            //
-            //await Program.discord.ConnectAsync(discordActivity);
-            //
-            //
-            //await ctx.RespondAsync("Refreshed.");
+            await ctx.RespondAsync(". . .");
+            
+            await Program.discord.DisconnectAsync();
+            
+            // BOT 'LISTENING' 'PLAYING' 'STREAMING...
+            DiscordActivity discordActivity = new DiscordActivity();
+            discordActivity.ActivityType = ActivityType.Playing;
+            discordActivity.Name = "Among Us | .help";
 
-            await Program.discord.ReconnectAsync();
+            await Task.Delay(5000); // 5s
+
+            await Program.discord.ConnectAsync(discordActivity);
+
+            await Task.Delay(5000); // 5s
+
             await ctx.RespondAsync("Refreshed.");
+
 
         }
 
