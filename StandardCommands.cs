@@ -53,6 +53,7 @@ namespace AmongUsDriver
 
         }
 
+        
         [Command("unmute")]
         [Aliases("u")]
         [Description("Unmutes everyone in your current voice channel.")]
@@ -83,6 +84,64 @@ namespace AmongUsDriver
                 }
 
 
+            }
+
+        }
+
+        [Command("silentmute")]
+        [Aliases("sm")]
+        [Hidden()]
+        [Description("Mutes everyone in your current voice channel.")]
+        [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
+        public async Task SilentMute(CommandContext ctx)
+        {
+            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+            {
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+            }
+            else
+            {
+                try
+                {
+                    foreach (var member in ctx.Member.VoiceState.Channel.Users)
+                    {
+                        await member.SetMuteAsync(true);
+                    }
+                }
+                catch
+                {
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
+                }
+
+
+            }
+
+        }
+
+        [Command("silentunmute")]
+        [Aliases("su")]
+        [Hidden()]
+        [Description("Mutes everyone in your current voice channel.")]
+        [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
+        public async Task SilentUnmute(CommandContext ctx)
+        {
+            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+            {
+                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+            }
+            else
+            {
+                try
+                {
+                    foreach (var member in ctx.Member.VoiceState.Channel.Users)
+                    {
+                        await member.SetMuteAsync(false);
+                    }
+                }
+                catch
+                {
+                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
+                }
             }
 
         }
@@ -187,21 +246,25 @@ namespace AmongUsDriver
 
         [Command("refresh")]
         [Aliases("r")]
-        [Description("")]
+        [Description("Refreshes the bot.")]
         public async Task Refresh(CommandContext ctx)
         {
-        
-            await ctx.RespondAsync(". . .");
-        
-            await Program.discord.DisconnectAsync();
-        
-            // BOT 'LISTENING' 'PLAYING' 'STREAMING...
-            DiscordActivity discordActivity = new DiscordActivity();
-            discordActivity.ActivityType = ActivityType.Playing;
-            discordActivity.Name = "Among Us | .help";
-        
-            await Program.discord.ConnectAsync(discordActivity);
-        
+
+            //await ctx.RespondAsync(". . .");
+            //
+            //await Program.discord.DisconnectAsync();
+            //
+            //// BOT 'LISTENING' 'PLAYING' 'STREAMING...
+            //DiscordActivity discordActivity = new DiscordActivity();
+            //discordActivity.ActivityType = ActivityType.Playing;
+            //discordActivity.Name = "Among Us | .help";
+            //
+            //await Program.discord.ConnectAsync(discordActivity);
+            //
+            //
+            //await ctx.RespondAsync("Refreshed.");
+
+            await Program.discord.ReconnectAsync();
             await ctx.RespondAsync("Refreshed.");
 
         }

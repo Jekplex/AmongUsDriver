@@ -58,8 +58,6 @@ namespace AmongUsDriver
                 MinimumLogLevel = LogLevel.Debug,
                 LogTimestampFormat = "MMM dd yyyy - hh:mm:ss tt"
 
-                
-
                 //UseInternalLogHandler = true,
                 //LogLevel = LogLevel.Debug
                 //MinimumLogLevel = LogLevel.Debug,
@@ -85,6 +83,7 @@ namespace AmongUsDriver
             commands.RegisterCommands<StandardCommands>();
             commands.RegisterCommands<FunCommands>();
             commands.RegisterCommands<GameCommands>();
+            commands.RegisterCommands<MuteControlPanelCommands>();
 
             // In Event of a command error do this:
             commands.CommandErrored += Commands_CommandErrored;
@@ -101,6 +100,11 @@ namespace AmongUsDriver
             // When a reaction is added to any message...
             discord.MessageReactionAdded += Discord_MessageReactionAdded;
 
+            // When a reaction is removed from any message...
+            discord.MessageReactionRemoved += Discord_MessageReactionRemoved;
+
+            //
+
             // BOT 'LISTENING' 'PLAYING' 'STREAMING...
             DiscordActivity discordActivity = new DiscordActivity();
             discordActivity.ActivityType = ActivityType.Playing;
@@ -111,9 +115,35 @@ namespace AmongUsDriver
             await Task.Delay(-1);
         }
 
+        private static async Task Discord_MessageReactionRemoved(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionRemoveEventArgs e)
+        {
+
+            // Unmutes when user with permissions remove their reaction on MuteCP.
+            if
+                (
+                e.Message.Author == discord.CurrentUser &&
+                e.Emoji == DiscordEmoji.FromName(discord, ":mute:") &&
+                !e.User.IsBot &&
+                (((DiscordMember)e.User).VoiceState != null || ((DiscordMember)e.User).VoiceState.Channel != null) &&
+                ((DiscordMember)e.User).PermissionsIn(((DiscordMember)e.User).VoiceState.Channel).HasPermission(Permissions.MuteMembers)
+                )
+            {
+
+                string _out;
+                var ctx = commands.CreateFakeContext(e.User, e.Channel, "su", ".", commands.FindCommand("su", out _out));
+                await commands.ExecuteCommandAsync(ctx);
+
+                //discord.GetCommandsNext().ExecuteCommandAsync(discord.GetCommandsNext().CreateContext("", ".", discord.GetCommandsNext().FindCommand("mute", out test)));
+
+            }
+
+            await Task.CompletedTask;
+        }
+
         private static async Task Discord_MessageReactionAdded(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionAddEventArgs e)
         {
 
+            // When people react to the SG game panel with a tick they get sent the code.
             if
                 (
                 e.Message.Author == discord.CurrentUser &&
@@ -132,11 +162,33 @@ namespace AmongUsDriver
                     );
             }
 
+            //
+
+            // Mute when mute is reacted on MuteCP
+            if
+                (
+                e.Message.Author == discord.CurrentUser &&
+                e.Emoji == DiscordEmoji.FromName(discord, ":mute:") &&
+                !e.User.IsBot &&
+                ( ((DiscordMember)e.User).VoiceState != null || ((DiscordMember)e.User).VoiceState.Channel != null ) &&
+                ((DiscordMember)e.User).PermissionsIn(((DiscordMember)e.User).VoiceState.Channel).HasPermission(Permissions.MuteMembers)
+                )
+            {
+
+                string _out;
+                var ctx = commands.CreateFakeContext(e.User, e.Channel, "sm", ".", commands.FindCommand("sm", out _out));
+                await commands.ExecuteCommandAsync(ctx);
+                
+            }
+
+            // Else do nothing...
+
+            await Task.CompletedTask;
         }
 
         private static async Task Discord_GuildDeleted(DiscordClient sender, DSharpPlus.EventArgs.GuildDeleteEventArgs e)
         {
-            Console.WriteLine($"Left a guild: {e.Guild.Name}");
+            Console.WriteLine($">>> Left a guild: {e.Guild.Name}");
             
             Program.guildToBool_IsGameInProgress.Remove(e.Guild.Id);
             Program.guildToCode.Remove(e.Guild.Id);
@@ -146,7 +198,7 @@ namespace AmongUsDriver
 
         private static async Task Discord_GuildCreated(DiscordClient sender, DSharpPlus.EventArgs.GuildCreateEventArgs e)
         {
-            Console.WriteLine($"Joined a new guild: {e.Guild.Name}");
+            Console.WriteLine($">>> Joined a new guild: {e.Guild.Name}");
             
             // Guild Setup
             Program.guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
@@ -167,7 +219,7 @@ namespace AmongUsDriver
 
         private static async Task Commands_CommandErrored(CommandsNextExtension sender, CommandErrorEventArgs e)
         {
-            //Console.WriteLine($"\"{e.Context.Message}\" Error! : {e.Exception.Message}");
+
             await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
 
         }
