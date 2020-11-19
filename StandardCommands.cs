@@ -52,7 +52,6 @@ namespace AmongUsDriver
             }
 
         }
-
         
         [Command("unmute")]
         [Aliases("u")]
@@ -88,63 +87,7 @@ namespace AmongUsDriver
 
         }
 
-        [Command("silentmute")]
-        [Aliases("sm")]
-        [Hidden()]
-        [Description("Mutes everyone in your current voice channel.")]
-        [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
-        public async Task SilentMute(CommandContext ctx)
-        {
-            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
-            {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
-            }
-            else
-            {
-                try
-                {
-                    foreach (var member in ctx.Member.VoiceState.Channel.Users)
-                    {
-                        await member.SetMuteAsync(true);
-                    }
-                }
-                catch
-                {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
-                }
-
-
-            }
-
-        }
-
-        [Command("silentunmute")]
-        [Aliases("su")]
-        [Hidden()]
-        [Description("Mutes everyone in your current voice channel.")]
-        [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
-        public async Task SilentUnmute(CommandContext ctx)
-        {
-            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
-            {
-                await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
-            }
-            else
-            {
-                try
-                {
-                    foreach (var member in ctx.Member.VoiceState.Channel.Users)
-                    {
-                        await member.SetMuteAsync(false);
-                    }
-                }
-                catch
-                {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
-                }
-            }
-
-        }
+        
 
         [Command("move")]
         [Description("Moves everyone from your current voice channel to a desired voice channel.")]
@@ -225,22 +168,13 @@ namespace AmongUsDriver
             await ctx.RespondAsync($". . .");
 
             var userDM = await ctx.Member.CreateDmChannelAsync();
-            var messages = userDM.GetMessagesAsync(10).Result.ToArray();
-            if (messages.Length < 10)
-            {
-                for (int i = 0; i < messages.Length; i++)
-                {
-                    await messages[i].DeleteAsync();
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    await messages[i].DeleteAsync();
-                }
-            }
+            var messages = userDM.GetMessagesAsync(10).Result;
 
+            foreach (var message in messages)
+            {
+                await message.DeleteAsync();
+            }
+            
             await ctx.RespondAsync($"{ctx.User.Mention} Deleted some dms.");
         }
 
@@ -252,21 +186,27 @@ namespace AmongUsDriver
 
             await ctx.RespondAsync(". . .");
             
+            // The only way I found that can successfully update Voice Channel Users.
             await Program.discord.DisconnectAsync();
-            
             // BOT 'LISTENING' 'PLAYING' 'STREAMING...
             DiscordActivity discordActivity = new DiscordActivity();
             discordActivity.ActivityType = ActivityType.Playing;
             discordActivity.Name = "Among Us | .help";
-
-            await Task.Delay(5000); // 5s
-
+            // "Reconnect" back. (ReconnectAsync doesn't actually work).
             await Program.discord.ConnectAsync(discordActivity);
 
-            await Task.Delay(5000); // 5s
+            await Task.Delay(5000);
+            await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
 
-            await ctx.RespondAsync("Refreshed.");
-
+            // Wait for ready then output Refreshed.
+            //Program.discord.Ready += (s, e) =>
+            //{
+            //    _ = Task.Run(async () => 
+            //    {
+            //        await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
+            //    });
+            //    return Task.CompletedTask;
+            //};
 
         }
 

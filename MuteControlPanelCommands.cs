@@ -14,8 +14,19 @@ namespace AmongUsDriver
     {
         [Command("mutecp")]
         [Aliases("mcp")]
+        [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
         public async Task MuteCP(CommandContext ctx, [RemainingText()] string extra)
         {
+            //validation
+            if (Program.guildToBool_IsMuteControlPanelOn[ctx.Guild.Id])
+            {
+                await ctx.RespondAsync($"{ctx.Member.Mention}, cannot create a mute control panel because one already exists.");
+                return;
+            }
+            else
+            {
+                Program.guildToBool_IsMuteControlPanelOn[ctx.Guild.Id] = true;
+            }
 
             var muteEmbed = new DiscordEmbedBuilder
             {
@@ -30,7 +41,12 @@ namespace AmongUsDriver
             var x = ":x:";
             var x_emoji = DiscordEmoji.FromName(ctx.Client, x);
 
+            // set user in
+            Program.guildToMuteControlPanelUser[ctx.Guild.Id] = ctx.User;
+
             // display text to the players
+            muteEmbed.Description += Environment.NewLine + Environment.NewLine;
+            muteEmbed.Description += $"Control Panel User: {ctx.Member.Mention}" + Environment.NewLine;
             muteEmbed.Description += Environment.NewLine + Environment.NewLine;
             muteEmbed.Description += $"{mute} - Mute / Unmute" + Environment.NewLine;
             muteEmbed.Description += $"{x} - Close" + Environment.NewLine;
@@ -43,12 +59,15 @@ namespace AmongUsDriver
             await myMessage.CreateReactionAsync(x_emoji);
 
             // Wait to delete. Or delete when member who made game closes.
-            await myMessage.WaitForReactionAsync(ctx.User, x_emoji, TimeSpan.FromHours(1f));
+            await myMessage.WaitForReactionAsync(ctx.User, x_emoji, TimeSpan.FromHours(3f));
 
             // Delete all messages
             await myMessage.DeleteAsync();
+            Program.guildToBool_IsMuteControlPanelOn[ctx.Guild.Id] = false;
+            Program.guildToMuteControlPanelUser[ctx.Guild.Id] = null;
 
-            //await Task.CompletedTask;
+
+
         }
 
     }
