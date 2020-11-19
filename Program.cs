@@ -116,15 +116,15 @@ namespace AmongUsDriver
             await Task.Delay(-1);
         }
 
-        private static async Task Discord_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs e)
+        private static Task Discord_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs e)
         {
             Console.WriteLine("Ready!");
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         private static async Task Discord_MessageReactionRemoved(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionRemoveEventArgs e)
         {
-
+            
             // Unmutes when user with permissions remove their reaction on MuteCP.
             if
                 (
@@ -143,8 +143,6 @@ namespace AmongUsDriver
 
             }
 
-            //
-            await Task.CompletedTask;
         }
 
         private static async Task Discord_MessageReactionAdded(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionAddEventArgs e)
@@ -189,8 +187,6 @@ namespace AmongUsDriver
                 
             }
 
-            // Else do nothing...
-            await Task.CompletedTask;
         }
 
         private static async Task Discord_GuildDeleted(DiscordClient sender, DSharpPlus.EventArgs.GuildDeleteEventArgs e)
