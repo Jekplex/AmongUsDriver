@@ -9,6 +9,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -18,9 +19,13 @@ namespace AmongUsDriver
     {
         public static DiscordClient discord; // DiscordClient or DiscordShardedClient?
 
-        static CommandsNextExtension commands;
+        public static CommandsNextExtension commands;
+        
+        public static InteractivityExtension interactivity;
 
-        static InteractivityExtension interactivity;
+        public static VoiceNextExtension voiceNext;
+
+
 
         public static Dictionary<ulong, bool> guildToBool_IsGameInProgress;
         public static Dictionary<ulong, string> guildToCode;
@@ -67,6 +72,14 @@ namespace AmongUsDriver
                 Timeout = TimeSpan.FromMinutes(5)
             };
             interactivity = discord.UseInteractivity(interactivityConfig);
+
+            //
+            var voiceConfig = new VoiceNextConfiguration
+            {
+                EnableIncoming = false
+            };
+            voiceNext = discord.UseVoiceNext(voiceConfig);
+            
 
             // Commands Config
             var commandsConfig = new CommandsNextConfiguration

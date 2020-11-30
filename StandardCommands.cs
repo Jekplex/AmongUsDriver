@@ -35,11 +35,22 @@ namespace AmongUsDriver
             {
                 await ctx.RespondAsync(". . .");
 
+                await Program.voiceNext.ConnectAsync(ctx.Member.VoiceState.Channel);
+
                 try
                 {
-                    foreach(var member in ctx.Member.VoiceState.Channel.Users)
+                    foreach(var member in Program.voiceNext.GetConnection(ctx.Guild).Channel.Users)
                     {
-                        await member.SetMuteAsync(true);
+                        if (member == (DiscordMember)ctx.Client.CurrentUser)
+                        {
+                            // ignore
+                            continue;
+                        }
+                        else
+                        {
+                            await member.SetMuteAsync(true);
+                        }
+                       
                     }
                     await ctx.RespondAsync($"{ctx.User.Mention}, All muted.");
                 }
@@ -48,6 +59,7 @@ namespace AmongUsDriver
                     await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
                 }
 
+                Program.voiceNext.GetConnection(ctx.Guild).Disconnect();
 
             }
 
@@ -69,11 +81,24 @@ namespace AmongUsDriver
 
                 await ctx.RespondAsync(". . .");
 
+                //
+                await Program.voiceNext.ConnectAsync(ctx.Member.VoiceState.Channel);
+                //Program.voiceNext.GetConnection(ctx.Guild);
+
                 try
                 {
-                    foreach (var member in ctx.Member.VoiceState.Channel.Users)
+                    foreach (var member in Program.voiceNext.GetConnection(ctx.Guild).Channel.Users)
                     {
-                        await member.SetMuteAsync(false);
+                        if (member == (DiscordMember)ctx.Client.CurrentUser)
+                        {
+                            // ignore
+                            continue;
+                        }
+                        else
+                        {
+                            await member.SetMuteAsync(false);
+                        }
+                            
                     }
                     await ctx.RespondAsync($"{ctx.User.Mention}, All unmuted.");
                 }
@@ -82,6 +107,7 @@ namespace AmongUsDriver
                     await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
                 }
 
+                Program.voiceNext.GetConnection(ctx.Guild).Disconnect();
 
             }
 
