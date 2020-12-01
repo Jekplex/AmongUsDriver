@@ -32,11 +32,9 @@ For Developers
 -----------
 In order to host your own version of this bot, there are some prerequisites. 
 
-Step 0.5: You'll need a discord developer app and a bot attached.
+Step 1: You'll need a discord developer app and a bot attached.
 
-You can make these in the Discord Developer Portal.
-
-Step 1: You’ll need your own config.json file. So create one.
+Step 2: You’ll need your own config.json file. So create one.
 
 ```json
 {
@@ -47,19 +45,22 @@ Step 1: You’ll need your own config.json file. So create one.
 }
 ```
 
-Please replace insert your discord bot token where it says [Insert Discord Bot Token]. Here you can change the prefix if you would like.
+Replace the token string with your discord bot's token. Whilst you're here, you could change the prefix if you want.
 
-Step 1.5: Simply be able to work in the .Net Core framework.
+Step 3: You need to be able to download and operate the .NET Core 3.1 framework.
 
-.Net Core 3.1 seems to work fine. So get that or greater.
+Step 4: You’ll need to add a new NuGet source (SlimGet) to your Nuget sources.
 
-Step 2: You’ll need to add some DSharpPlus packages from SlimGet (a nuget source). 
+You’ll need to add their URL to your NuGet sources. URL and more information can be found here: https://nuget.emzi0767.com/gallery/about
+
+Step 5: Run.
+
+With the newly added NuGet source, you should be able to run the program and the the framework should retrieve whatever it needs automatically. However, if it doesn't then you need to get the latest version of the following packages manually.
 
 Packages you'll need:
 * DSharpPlus
 * DSharpPlus.CommandsNext
 * DSharpPlus.Interactivity
+* DSharpPlus.VoiceNext
 
-You get these from SlimGet. You’ll need to add their URL to your NuGet sources. URL and more information can be found here: https://nuget.emzi0767.com/gallery/about
-
-Now, you can add the three packages or just run. DOTNET should be able to grab the packages needed. :)
+Now you should be able to try Step 5 again.
