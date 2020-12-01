@@ -32,9 +32,9 @@ For Developers
 -----------
 In order to host your own version of this bot, there are some prerequisites. 
 
-Step 1: You'll need a discord developer app and a bot attached.
+**Step 1:** You'll need a discord developer app and a bot attached.
 
-Step 2: You’ll need your own config.json file. So create one.
+**Step 2:** You’ll need your own config.json file. So create one.
 
 ```json
 {
@@ -47,13 +47,13 @@ Step 2: You’ll need your own config.json file. So create one.
 
 Replace the token string with your discord bot's token. Whilst you're here, you could change the prefix if you want.
 
-Step 3: You need to be able to download and operate the .NET Core 3.1 framework.
+**Step 3:** You need to be able to download and operate the .NET Core 3.1 framework.
 
-Step 4: You’ll need to add a new NuGet source (SlimGet) to your Nuget sources.
+**Step 4:** You’ll need to add a new NuGet source (SlimGet) to your Nuget sources.
 
 You’ll need to add their URL to your NuGet sources. URL and more information can be found here: https://nuget.emzi0767.com/gallery/about
 
-Step 5: Run.
+**Step 5:** Run.
 
 With the newly added NuGet source, you should be able to run the program and the the framework should retrieve whatever it needs automatically. However, if it doesn't then you need to get the latest version of the following packages manually.
 
