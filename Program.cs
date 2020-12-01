@@ -15,22 +15,24 @@ using Newtonsoft.Json;
 
 namespace AmongUsDriver
 {
+    // THINKING
+    // BOT VOICE .JOIN / .MUTE / .UNMUTE
+    //
+
     class Program
     {
         public static DiscordClient discord; // DiscordClient or DiscordShardedClient?
 
         public static CommandsNextExtension commands;
-        
         public static InteractivityExtension interactivity;
-
         public static VoiceNextExtension voiceNext;
 
-
-
+        // My variables.
         public static Dictionary<ulong, bool> guildToBool_IsGameInProgress;
-        public static Dictionary<ulong, string> guildToCode;
-        public static Dictionary<ulong, bool> guildToBool_IsMuteControlPanelOn;
-        public static Dictionary<ulong, DiscordUser> guildToMuteControlPanelUser;
+        public static Dictionary<ulong, string> guildToGameCode;
+
+        //public static Dictionary<ulong, bool> guildToBool_IsMuteControlPanelOn;
+        //public static Dictionary<ulong, DiscordUser> guildToMuteControlPanelUser;
 
         static void Main(string[] args)
         {
@@ -38,9 +40,10 @@ namespace AmongUsDriver
 
             // My Dictionaries
             guildToBool_IsGameInProgress = new Dictionary<ulong, bool>();
-            guildToCode = new Dictionary<ulong, string>();
-            guildToBool_IsMuteControlPanelOn = new Dictionary<ulong, bool>();
-            guildToMuteControlPanelUser = new Dictionary<ulong, DiscordUser>();
+            guildToGameCode = new Dictionary<ulong, string>();
+            
+            //guildToBool_IsMuteControlPanelOn = new Dictionary<ulong, bool>();
+            //guildToMuteControlPanelUser = new Dictionary<ulong, DiscordUser>();
 
             // Bot Start
             MainAsync().GetAwaiter().GetResult();
@@ -93,8 +96,8 @@ namespace AmongUsDriver
             commands.RegisterCommands<StandardCommands>();
             commands.RegisterCommands<FunCommands>();
             commands.RegisterCommands<GameCommands>();
-            commands.RegisterCommands<SilentCommands>();
-            commands.RegisterCommands<MuteControlPanelCommands>();
+            //commands.RegisterCommands<SilentCommands>();
+            //commands.RegisterCommands<MuteControlPanelCommands>();
 
             // In Event of a command error do this:
             commands.CommandErrored += Commands_CommandErrored;
@@ -137,24 +140,26 @@ namespace AmongUsDriver
 
         private static async Task Discord_MessageReactionRemoved(DiscordClient sender, DSharpPlus.EventArgs.MessageReactionRemoveEventArgs e)
         {
-            
+
             // Unmutes when user with permissions remove their reaction on MuteCP.
-            if
-                (
-                e.Message.Author == discord.CurrentUser &&
-                e.Emoji == DiscordEmoji.FromName(discord, ":mute:") &&
-                !e.User.IsBot &&
-                (((DiscordMember)e.User).VoiceState != null || ((DiscordMember)e.User).VoiceState.Channel != null) &&
-                /* ((DiscordMember)e.User).PermissionsIn(((DiscordMember)e.User).VoiceState.Channel).HasPermission(Permissions.MuteMembers) && */
-                e.User == guildToMuteControlPanelUser[e.Guild.Id]
-                )
-            {
+            //if
+            //    (
+            //    e.Message.Author == discord.CurrentUser &&
+            //    e.Emoji == DiscordEmoji.FromName(discord, ":mute:") &&
+            //    !e.User.IsBot &&
+            //    (((DiscordMember)e.User).VoiceState != null || ((DiscordMember)e.User).VoiceState.Channel != null) &&
+            //    /* ((DiscordMember)e.User).PermissionsIn(((DiscordMember)e.User).VoiceState.Channel).HasPermission(Permissions.MuteMembers) && */
+            //    e.User == guildToMuteControlPanelUser[e.Guild.Id]
+            //    )
+            //{
+            //
+            //    string _out;
+            //    var ctx = commands.CreateFakeContext(e.User, e.Channel, "su", ".", commands.FindCommand("su", out _out));
+            //    await commands.ExecuteCommandAsync(ctx);
+            //
+            //}
 
-                string _out;
-                var ctx = commands.CreateFakeContext(e.User, e.Channel, "su", ".", commands.FindCommand("su", out _out));
-                await commands.ExecuteCommandAsync(ctx);
-
-            }
+            await Task.CompletedTask;
 
         }
 
@@ -162,6 +167,7 @@ namespace AmongUsDriver
         {
 
             // When people react to the SG game panel with a tick they get sent the code.
+            
             if
                 (
                 e.Message.Author == discord.CurrentUser &&
@@ -176,29 +182,29 @@ namespace AmongUsDriver
                 await member.SendMessageAsync
                     (
                         $"From: {e.Guild.Name}\n" +
-                        $"{Program.guildToCode[e.Guild.Id].ToUpper()}"
+                        $"{Program.guildToGameCode[e.Guild.Id].ToUpper()}"
                     );
             }
 
             //
 
             // Mute when mute is reacted on MuteCP
-            if
-                (
-                e.Message.Author == discord.CurrentUser &&
-                e.Emoji == DiscordEmoji.FromName(discord, ":mute:") &&
-                !e.User.IsBot &&
-                ( ((DiscordMember)e.User).VoiceState != null || ((DiscordMember)e.User).VoiceState.Channel != null ) &&
-                /*((DiscordMember)e.User).PermissionsIn(((DiscordMember)e.User).VoiceState.Channel).HasPermission(Permissions.MuteMembers)*/
-                e.User == guildToMuteControlPanelUser[e.Guild.Id]
-                )
-            {
-
-                string _out;
-                var ctx = commands.CreateFakeContext(e.User, e.Channel, "sm", ".", commands.FindCommand("sm", out _out));
-                await commands.ExecuteCommandAsync(ctx);
-                
-            }
+            //if
+            //    (
+            //    e.Message.Author == discord.CurrentUser &&
+            //    e.Emoji == DiscordEmoji.FromName(discord, ":mute:") &&
+            //    !e.User.IsBot &&
+            //    ( ((DiscordMember)e.User).VoiceState != null || ((DiscordMember)e.User).VoiceState.Channel != null ) &&
+            //    /*((DiscordMember)e.User).PermissionsIn(((DiscordMember)e.User).VoiceState.Channel).HasPermission(Permissions.MuteMembers)*/
+            //    e.User == guildToMuteControlPanelUser[e.Guild.Id]
+            //    )
+            //{
+            //
+            //    string _out;
+            //    var ctx = commands.CreateFakeContext(e.User, e.Channel, "sm", ".", commands.FindCommand("sm", out _out));
+            //    await commands.ExecuteCommandAsync(ctx);
+            //    
+            //}
 
         }
 
@@ -207,9 +213,9 @@ namespace AmongUsDriver
             Console.WriteLine($">>> Left a guild: {e.Guild.Name}");
             
             Program.guildToBool_IsGameInProgress.Remove(e.Guild.Id);
-            Program.guildToCode.Remove(e.Guild.Id);
-            Program.guildToBool_IsMuteControlPanelOn.Remove(e.Guild.Id);
-            Program.guildToMuteControlPanelUser.Remove(e.Guild.Id);
+            Program.guildToGameCode.Remove(e.Guild.Id);
+            //Program.guildToBool_IsMuteControlPanelOn.Remove(e.Guild.Id);
+            //Program.guildToMuteControlPanelUser.Remove(e.Guild.Id);
             
             await Task.CompletedTask;
         }
@@ -220,9 +226,9 @@ namespace AmongUsDriver
             
             // Guild Setup
             Program.guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
-            Program.guildToCode.Add(e.Guild.Id, "");
-            Program.guildToBool_IsMuteControlPanelOn.Add(e.Guild.Id, false);
-            Program.guildToMuteControlPanelUser.Add(e.Guild.Id, null);
+            Program.guildToGameCode.Add(e.Guild.Id, "");
+            //Program.guildToBool_IsMuteControlPanelOn.Add(e.Guild.Id, false);
+            //Program.guildToMuteControlPanelUser.Add(e.Guild.Id, null);
 
             await Task.CompletedTask;
         }
@@ -231,9 +237,9 @@ namespace AmongUsDriver
         {
             // Guild Setup
             Program.guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
-            Program.guildToCode.Add(e.Guild.Id, "");
-            Program.guildToBool_IsMuteControlPanelOn.Add(e.Guild.Id, false);
-            Program.guildToMuteControlPanelUser.Add(e.Guild.Id, null);
+            Program.guildToGameCode.Add(e.Guild.Id, "");
+            //Program.guildToBool_IsMuteControlPanelOn.Add(e.Guild.Id, false);
+            //Program.guildToMuteControlPanelUser.Add(e.Guild.Id, null);
 
             await Task.CompletedTask;
 
@@ -243,6 +249,7 @@ namespace AmongUsDriver
         {
 
             await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
+            //Console.WriteLine(e.Command.Name);
 
         }
     }

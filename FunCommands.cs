@@ -17,6 +17,13 @@ namespace AmongUsDriver
             await ctx.RespondAsync($"._. (me too)");
         }
 
+        //[Command("peepeepoopo")]
+        //[Hidden()]
+        //public async Task PeepeePoopoo(CommandContext ctx, [RemainingText()] string extra)
+        //{
+        //    await ctx.RespondAsync($"YASSS {ctx.Member.Mention}  ");
+        //}
+
     }
 
 }

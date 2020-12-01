@@ -27,41 +27,38 @@ namespace AmongUsDriver
         [RequirePermissions(DSharpPlus.Permissions.MuteMembers)]
         public async Task Mute(CommandContext ctx)
         {
+
+            // Validation
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+                return;
             }
-            else
+            
+            //await ctx.RespondAsync(". . .");
+            
+            // Join VC
+            await Program.voiceNext.ConnectAsync(ctx.Member.VoiceState.Channel);
+
+            // Try mute everyone... (but the bot)
+            // If something errors tell the user. 
+            // else tell the user everyone is muted and disconnect.
+            try
             {
-                await ctx.RespondAsync(". . .");
-
-                await Program.voiceNext.ConnectAsync(ctx.Member.VoiceState.Channel);
-
-                try
+                foreach(var member in Program.voiceNext.GetConnection(ctx.Guild).Channel.Users)
                 {
-                    foreach(var member in Program.voiceNext.GetConnection(ctx.Guild).Channel.Users)
-                    {
-                        if (member == (DiscordMember)ctx.Client.CurrentUser)
-                        {
-                            // ignore
-                            continue;
-                        }
-                        else
-                        {
-                            await member.SetMuteAsync(true);
-                        }
-                       
-                    }
-                    await ctx.RespondAsync($"{ctx.User.Mention}, All muted.");
-                }
-                catch
-                {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
-                }
+                    await member.SetMuteAsync(true);
 
-                Program.voiceNext.GetConnection(ctx.Guild).Disconnect();
-
+                }
+                await ctx.RespondAsync($"{ctx.User.Mention}, All muted.");
             }
+            catch
+            {
+                
+                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
+            }
+
+            Program.voiceNext.GetConnection(ctx.Guild).Disconnect();
 
         }
         
@@ -72,44 +69,77 @@ namespace AmongUsDriver
         public async Task Unmute(CommandContext ctx)
         {
 
+            // Validation
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+                return;
             }
-            else
+
+            //await ctx.RespondAsync(". . .");
+
+            // Join VC
+            await Program.voiceNext.ConnectAsync(ctx.Member.VoiceState.Channel);
+
+            // Try mute everyone... (but the bot)
+            // If something errors tell the user. 
+            // else tell the user everyone is muted and disconnect.
+            try
+            {
+                foreach (var member in Program.voiceNext.GetConnection(ctx.Guild).Channel.Users)
+                {
+
+                    await member.SetMuteAsync(false);
+
+                }
+                await ctx.RespondAsync($"{ctx.User.Mention}, All unmuted.");
+            }
+            catch
             {
 
-                await ctx.RespondAsync(". . .");
-
-                //
-                await Program.voiceNext.ConnectAsync(ctx.Member.VoiceState.Channel);
-                //Program.voiceNext.GetConnection(ctx.Guild);
-
-                try
-                {
-                    foreach (var member in Program.voiceNext.GetConnection(ctx.Guild).Channel.Users)
-                    {
-                        if (member == (DiscordMember)ctx.Client.CurrentUser)
-                        {
-                            // ignore
-                            continue;
-                        }
-                        else
-                        {
-                            await member.SetMuteAsync(false);
-                        }
-                            
-                    }
-                    await ctx.RespondAsync($"{ctx.User.Mention}, All unmuted.");
-                }
-                catch
-                {
-                    await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
-                }
-
-                Program.voiceNext.GetConnection(ctx.Guild).Disconnect();
-
+                await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
             }
+
+            Program.voiceNext.GetConnection(ctx.Guild).Disconnect();
+
+            //if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+            //{
+            //    await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+            //}
+            //else
+            //{
+            //
+            //    await ctx.RespondAsync(". . .");
+            //
+            //    //
+            //    await Program.voiceNext.ConnectAsync(ctx.Member.VoiceState.Channel);
+            //    //Program.voiceNext.GetConnection(ctx.Guild);
+            //
+            //    try
+            //    {
+            //        foreach (var member in Program.voiceNext.GetConnection(ctx.Guild).Channel.Users)
+            //        {
+            //            if (member == (DiscordMember)ctx.Client.CurrentUser)
+            //            {
+            //                // ignore
+            //                continue;
+            //            }
+            //            else
+            //            {
+            //                await member.SetMuteAsync(false);
+            //            }
+            //                
+            //        }
+            //        await ctx.RespondAsync($"{ctx.User.Mention}, All unmuted.");
+            //    }
+            //    catch
+            //    {
+            //        await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly.");
+            //    }
+            //
+            //    Program.voiceNext.GetConnection(ctx.Guild).Disconnect();
+            //
+            //}
 
         }
 
@@ -187,54 +217,54 @@ namespace AmongUsDriver
 
         }
 
-        [Command("cleardms")]
-        [Description("Used to clear your dms with this bot. (Deletes max 10 messages per command.)")]
-        public async Task ClearDMS(CommandContext ctx)
-        {
-            await ctx.RespondAsync($". . .");
+        //[Command("cleardms")]
+        //[Description("Used to clear your dms with this bot. (Deletes max 10 messages per command.)")]
+        //public async Task ClearDMS(CommandContext ctx)
+        //{
+        //    await ctx.RespondAsync($". . .");
+        //
+        //    var userDM = await ctx.Member.CreateDmChannelAsync();
+        //    var messages = userDM.GetMessagesAsync(10).Result;
+        //
+        //    foreach (var message in messages)
+        //    {
+        //        await message.DeleteAsync();
+        //    }
+        //    
+        //    await ctx.RespondAsync($"{ctx.User.Mention} Deleted some dms.");
+        //}
 
-            var userDM = await ctx.Member.CreateDmChannelAsync();
-            var messages = userDM.GetMessagesAsync(10).Result;
-
-            foreach (var message in messages)
-            {
-                await message.DeleteAsync();
-            }
-            
-            await ctx.RespondAsync($"{ctx.User.Mention} Deleted some dms.");
-        }
-
-        [Command("refresh")]
-        [Aliases("r")]
-        [Description("Refreshes the bot.")]
-        public async Task Refresh(CommandContext ctx)
-        {
-
-            await ctx.RespondAsync(". . .");
-            
-            // The only way I found that can successfully update Voice Channel Users.
-            await Program.discord.DisconnectAsync();
-            // BOT 'LISTENING' 'PLAYING' 'STREAMING...
-            DiscordActivity discordActivity = new DiscordActivity();
-            discordActivity.ActivityType = ActivityType.Playing;
-            discordActivity.Name = "Among Us | .help";
-            // "Reconnect" back. (ReconnectAsync doesn't actually work).
-            await Program.discord.ConnectAsync(discordActivity);
-
-            await Task.Delay(5000);
-            await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
-
-            // Wait for ready then output Refreshed.
-            //Program.discord.Ready += (s, e) =>
-            //{
-            //    _ = Task.Run(async () => 
-            //    {
-            //        await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
-            //    });
-            //    return Task.CompletedTask;
-            //};
-
-        }
+        //[Command("refresh")]
+        //[Aliases("r")]
+        //[Description("Refreshes the bot.")]
+        //public async Task Refresh(CommandContext ctx)
+        //{
+        //
+        //    await ctx.RespondAsync(". . .");
+        //    
+        //    // The only way I found that can successfully update Voice Channel Users.
+        //    await Program.discord.DisconnectAsync();
+        //    // BOT 'LISTENING' 'PLAYING' 'STREAMING...
+        //    DiscordActivity discordActivity = new DiscordActivity();
+        //    discordActivity.ActivityType = ActivityType.Playing;
+        //    discordActivity.Name = "Among Us | .help";
+        //    // "Reconnect" back. (ReconnectAsync doesn't actually work).
+        //    await Program.discord.ConnectAsync(discordActivity);
+        //
+        //    await Task.Delay(5000);
+        //    await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
+        //
+        //    // Wait for ready then output Refreshed.
+        //    //Program.discord.Ready += (s, e) =>
+        //    //{
+        //    //    _ = Task.Run(async () => 
+        //    //    {
+        //    //        await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
+        //    //    });
+        //    //    return Task.CompletedTask;
+        //    //};
+        //
+        //}
 
     }
 

@@ -11,6 +11,8 @@ namespace AmongUsDriver
     class SilentCommands : BaseCommandModule
     {
 
+        // OLD UNUSED CODE THAT ISN'T CONNECTED TO THE PROGRAM
+
         [Command("silentmute")]
         [Aliases("sm")]
         [Hidden()]

@@ -37,7 +37,7 @@ namespace AmongUsDriver
             Program.guildToBool_IsGameInProgress[ctx.Guild.Id] = true;
 
             // add code to dictionary.
-            Program.guildToCode[ctx.Guild.Id] = code;
+            Program.guildToGameCode[ctx.Guild.Id] = code;
 
             // create game embed
             var gameEmbed = new DiscordEmbedBuilder
