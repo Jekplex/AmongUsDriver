@@ -15,21 +15,19 @@ using Newtonsoft.Json;
 
 namespace AmongUsDriver
 {
-    // THINKING
-    // BOT VOICE .JOIN / .MUTE / .UNMUTE
-    //
 
     class Program
     {
-        public static DiscordClient discord; // DiscordClient or DiscordShardedClient?
+        public static DiscordClient discord;
 
-        public static CommandsNextExtension commands;
-        public static InteractivityExtension interactivity;
-        public static VoiceNextExtension voiceNext;
+        static CommandsNextExtension commands;
+        static InteractivityExtension interactivity;
+        static VoiceNextExtension voiceNext;
 
         // My variables.
         public static Dictionary<ulong, bool> guildToBool_IsGameInProgress;
         public static Dictionary<ulong, string> guildToGameCode;
+        public static Dictionary<ulong, bool> guildToBool_IsMuted;
 
         //public static Dictionary<ulong, bool> guildToBool_IsMuteControlPanelOn;
         //public static Dictionary<ulong, DiscordUser> guildToMuteControlPanelUser;
@@ -41,7 +39,8 @@ namespace AmongUsDriver
             // My Dictionaries
             guildToBool_IsGameInProgress = new Dictionary<ulong, bool>();
             guildToGameCode = new Dictionary<ulong, string>();
-            
+            guildToBool_IsMuted = new Dictionary<ulong, bool>();
+
             //guildToBool_IsMuteControlPanelOn = new Dictionary<ulong, bool>();
             //guildToMuteControlPanelUser = new Dictionary<ulong, DiscordUser>();
 
@@ -120,6 +119,9 @@ namespace AmongUsDriver
             // When bot is ready...
             discord.Ready += Discord_Ready;
 
+            // When VoiceState is changed
+            discord.VoiceStateUpdated += Discord_VoiceStateUpdated;
+
             //
 
             // BOT 'LISTENING' 'PLAYING' 'STREAMING...
@@ -130,6 +132,11 @@ namespace AmongUsDriver
             // Connect and wait infinitely.
             await discord.ConnectAsync(discordActivity);
             await Task.Delay(-1);
+        }
+
+        private static async Task Discord_VoiceStateUpdated(DiscordClient sender, DSharpPlus.EventArgs.VoiceStateUpdateEventArgs e)
+        {
+            await Task.CompletedTask;
         }
 
         private static Task Discord_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs e)
@@ -182,29 +189,12 @@ namespace AmongUsDriver
                 await member.SendMessageAsync
                     (
                         $"From: {e.Guild.Name}\n" +
-                        $"{Program.guildToGameCode[e.Guild.Id].ToUpper()}"
+                        $"{guildToGameCode[e.Guild.Id].ToUpper()}"
                     );
+
+                Console.WriteLine
+                    ($">>> Sent code '{guildToGameCode[e.Guild.Id].ToUpper()}' to {member.Username}#{member.Discriminator} from guild '{e.Guild.Name}' : {e.Guild.Id}");
             }
-
-            //
-
-            // Mute when mute is reacted on MuteCP
-            //if
-            //    (
-            //    e.Message.Author == discord.CurrentUser &&
-            //    e.Emoji == DiscordEmoji.FromName(discord, ":mute:") &&
-            //    !e.User.IsBot &&
-            //    ( ((DiscordMember)e.User).VoiceState != null || ((DiscordMember)e.User).VoiceState.Channel != null ) &&
-            //    /*((DiscordMember)e.User).PermissionsIn(((DiscordMember)e.User).VoiceState.Channel).HasPermission(Permissions.MuteMembers)*/
-            //    e.User == guildToMuteControlPanelUser[e.Guild.Id]
-            //    )
-            //{
-            //
-            //    string _out;
-            //    var ctx = commands.CreateFakeContext(e.User, e.Channel, "sm", ".", commands.FindCommand("sm", out _out));
-            //    await commands.ExecuteCommandAsync(ctx);
-            //    
-            //}
 
         }
 
@@ -212,11 +202,10 @@ namespace AmongUsDriver
         {
             Console.WriteLine($">>> Left a guild: {e.Guild.Name}");
             
-            Program.guildToBool_IsGameInProgress.Remove(e.Guild.Id);
-            Program.guildToGameCode.Remove(e.Guild.Id);
-            //Program.guildToBool_IsMuteControlPanelOn.Remove(e.Guild.Id);
-            //Program.guildToMuteControlPanelUser.Remove(e.Guild.Id);
-            
+            guildToBool_IsGameInProgress.Remove(e.Guild.Id);
+            guildToGameCode.Remove(e.Guild.Id);
+            guildToBool_IsMuted.Remove(e.Guild.Id);
+
             await Task.CompletedTask;
         }
 
@@ -225,10 +214,9 @@ namespace AmongUsDriver
             Console.WriteLine($">>> Joined a new guild: {e.Guild.Name}");
             
             // Guild Setup
-            Program.guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
-            Program.guildToGameCode.Add(e.Guild.Id, "");
-            //Program.guildToBool_IsMuteControlPanelOn.Add(e.Guild.Id, false);
-            //Program.guildToMuteControlPanelUser.Add(e.Guild.Id, null);
+            guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
+            guildToGameCode.Add(e.Guild.Id, "");
+            guildToBool_IsMuted.Add(e.Guild.Id, false);
 
             await Task.CompletedTask;
         }
@@ -236,10 +224,9 @@ namespace AmongUsDriver
         private static async Task Discord_GuildAvailable(DiscordClient sender, DSharpPlus.EventArgs.GuildCreateEventArgs e)
         {
             // Guild Setup
-            Program.guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
-            Program.guildToGameCode.Add(e.Guild.Id, "");
-            //Program.guildToBool_IsMuteControlPanelOn.Add(e.Guild.Id, false);
-            //Program.guildToMuteControlPanelUser.Add(e.Guild.Id, null);
+            guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
+            guildToGameCode.Add(e.Guild.Id, "");
+            guildToBool_IsMuted.Add(e.Guild.Id, false);
 
             await Task.CompletedTask;
 
@@ -248,8 +235,9 @@ namespace AmongUsDriver
         private static async Task Commands_CommandErrored(CommandsNextExtension sender, CommandErrorEventArgs e)
         {
 
+            //
+
             await e.Context.RespondAsync($"{e.Context.Member.Mention}, Command Error! - Stuck? Use '.help'");
-            //Console.WriteLine(e.Command.Name);
 
         }
     }
