@@ -113,13 +113,13 @@ namespace AmongUsDriver
 
         }
 
-        //[Command("restart")]
-        //[Aliases("r")]
-        //public async Task Restart(CommandContext ctx)
-        //{
-        //    await Program.discord.ReconnectAsync(true);
-        //    //await ctx.RespondAsync("Restarting...");
-        //}
+        [Command("reload")]
+        [Aliases("r")]
+        public async Task Reload(CommandContext ctx)
+        {
+            await Program.discord.ReconnectAsync(true);
+            await ctx.RespondAsync("Reloading... Please wait a moment before using me.");
+        }
 
 
         [Command("move")]
