@@ -141,7 +141,10 @@ namespace AmongUsDriver
 
         private static Task Discord_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs e)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Ready!");
+            Console.ResetColor();
+
             return Task.CompletedTask;
         }
 
@@ -192,16 +195,20 @@ namespace AmongUsDriver
                         $"{guildToGameCode[e.Guild.Id].ToUpper()}"
                     );
 
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine
                     ($">>> Sent code '{guildToGameCode[e.Guild.Id].ToUpper()}' to {member.Username}#{member.Discriminator} from guild '{e.Guild.Name}' : {e.Guild.Id}");
+                Console.ResetColor();
             }
 
         }
 
         private static async Task Discord_GuildDeleted(DiscordClient sender, DSharpPlus.EventArgs.GuildDeleteEventArgs e)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($">>> Left a guild: {e.Guild.Name}");
-            
+            Console.ResetColor();
+
             guildToBool_IsGameInProgress.Remove(e.Guild.Id);
             guildToGameCode.Remove(e.Guild.Id);
             guildToBool_IsMuted.Remove(e.Guild.Id);
@@ -211,8 +218,10 @@ namespace AmongUsDriver
 
         private static async Task Discord_GuildCreated(DiscordClient sender, DSharpPlus.EventArgs.GuildCreateEventArgs e)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($">>> Joined a new guild: {e.Guild.Name}");
-            
+            Console.ResetColor();
+
             // Guild Setup
             guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
             guildToGameCode.Add(e.Guild.Id, "");
