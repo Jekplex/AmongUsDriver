@@ -52,8 +52,17 @@ namespace AmongUsDriver
                 return;
             }
 
+            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
+            {
+                return;
+            }
+            else
+            {
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
+            }
+
             //
-            await Program.discord.ReconnectAsync(true);
+            //await Program.discord.ReconnectAsync(true);
 
             // Start the muting
             try
@@ -65,12 +74,13 @@ namespace AmongUsDriver
                     await member.SetMuteAsync(true);
                 }
                 await ctx.RespondAsync($"{ctx.User.Mention}, All muted.");
-                
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
 
             }
             catch
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! Something went wrong. :/");
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
             }
 
         }
@@ -89,8 +99,18 @@ namespace AmongUsDriver
                 return;
             }
 
+            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
+            {
+                return;
+            }
+            else
+            {
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
+            }
+
+
             //
-            await Program.discord.ReconnectAsync(true);
+            //await Program.discord.ReconnectAsync(true);
 
             // Start the unmuting
             try
@@ -103,12 +123,13 @@ namespace AmongUsDriver
                     await member.SetMuteAsync(false);
                 }
                 await ctx.RespondAsync($"{ctx.User.Mention}, All unmuted.");
-                
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
 
             }
             catch
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! Something went wrong. :/");
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
             }
 
         }
@@ -117,8 +138,18 @@ namespace AmongUsDriver
         [Aliases("r")]
         public async Task Reload(CommandContext ctx)
         {
+            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
+            {
+                return;
+            }
+            else
+            {
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
+            }
+
             await Program.discord.ReconnectAsync(true);
             await ctx.RespondAsync("Reloading... Please wait a moment before using me.");
+            Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
         }
 
 
@@ -127,11 +158,20 @@ namespace AmongUsDriver
         [RequirePermissions(DSharpPlus.Permissions.MoveMembers)]
         public async Task Move(CommandContext ctx, [RemainingText()] string voice_channel)
         {
+            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
+            {
+                return;
+            }
+            else
+            {
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
+            }
 
             // before doing these instructions check if player is even present a voice channel.
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
                 return;
             }
 
@@ -170,6 +210,7 @@ namespace AmongUsDriver
             if (targetVoiceChannel == ctx.Member.VoiceState.Channel)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. (Or you are already in that voice channel).");
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
                 return;
             }
 
@@ -191,6 +232,9 @@ namespace AmongUsDriver
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly. (Or not everyone has permissions to access that room.)");
             }
+            Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
+
+
 
         }
 
@@ -198,6 +242,15 @@ namespace AmongUsDriver
         [Description("Used to clear your dms with this bot. (Deletes max 10 messages per command.)")]
         public async Task ClearDMS(CommandContext ctx)
         {
+            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
+            {
+                return;
+            }
+            else
+            {
+                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
+            }
+
             await ctx.RespondAsync($". . .");
         
             var userDM = await ctx.Member.CreateDmChannelAsync();
@@ -209,6 +262,8 @@ namespace AmongUsDriver
             }
             
             await ctx.RespondAsync($"{ctx.User.Mention} Deleted some dms.");
+            Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
+
         }
 
         //[Command("refresh")]

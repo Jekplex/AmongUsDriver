@@ -28,6 +28,7 @@ namespace AmongUsDriver
         public static Dictionary<ulong, bool> guildToBool_IsGameInProgress;
         public static Dictionary<ulong, string> guildToGameCode;
         public static Dictionary<ulong, bool> guildToBool_IsMuted;
+        public static Dictionary<ulong, bool> guildToBool_IsWorking;
 
         //public static Dictionary<ulong, bool> guildToBool_IsMuteControlPanelOn;
         //public static Dictionary<ulong, DiscordUser> guildToMuteControlPanelUser;
@@ -212,6 +213,7 @@ namespace AmongUsDriver
             guildToBool_IsGameInProgress.Remove(e.Guild.Id);
             guildToGameCode.Remove(e.Guild.Id);
             guildToBool_IsMuted.Remove(e.Guild.Id);
+            guildToBool_IsWorking.Remove(e.Guild.Id);
 
             await Task.CompletedTask;
         }
@@ -226,6 +228,7 @@ namespace AmongUsDriver
             guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
             guildToGameCode.Add(e.Guild.Id, "");
             guildToBool_IsMuted.Add(e.Guild.Id, false);
+            guildToBool_IsWorking.Add(e.Guild.Id, false);
 
             await Task.CompletedTask;
         }
@@ -236,6 +239,7 @@ namespace AmongUsDriver
             guildToBool_IsGameInProgress.Add(e.Guild.Id, false);
             guildToGameCode.Add(e.Guild.Id, "");
             guildToBool_IsMuted.Add(e.Guild.Id, false);
+            guildToBool_IsWorking.Add(e.Guild.Id, false);
 
             await Task.CompletedTask;
 
