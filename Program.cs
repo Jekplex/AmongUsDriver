@@ -41,6 +41,7 @@ namespace AmongUsDriver
             guildToBool_IsGameInProgress = new Dictionary<ulong, bool>();
             guildToGameCode = new Dictionary<ulong, string>();
             guildToBool_IsMuted = new Dictionary<ulong, bool>();
+            guildToBool_IsWorking = new Dictionary<ulong, bool>();
 
             //guildToBool_IsMuteControlPanelOn = new Dictionary<ulong, bool>();
             //guildToMuteControlPanelUser = new Dictionary<ulong, DiscordUser>();
