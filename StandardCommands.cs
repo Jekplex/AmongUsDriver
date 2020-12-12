@@ -148,7 +148,7 @@ namespace AmongUsDriver
             }
 
             await Program.discord.ReconnectAsync(true);
-            await ctx.RespondAsync("Reloading... Please wait a moment before using me. (I won't tell you when I am ready. Worst-case scenario I'll just ignore a few of your next command.");
+            await ctx.RespondAsync("Reloading... Please wait a moment before using me. (I won't tell you when I am ready. Worst-case scenario I'll just ignore a few of your next command.)");
             Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
             
         }
