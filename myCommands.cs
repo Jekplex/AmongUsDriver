@@ -12,7 +12,7 @@ using DSharpPlus.VoiceNext;
 
 namespace AmongUsDriver
 {
-    class StandardCommands : BaseCommandModule
+    class myCommands : BaseCommandModule
     {
         [Command("ping")]
         [Aliases("p")]
@@ -22,22 +22,6 @@ namespace AmongUsDriver
             await ctx.RespondAsync($"{ctx.User.Mention}, pong!");
         }
 
-        //[Command("join")]
-        //public async Task Join(CommandContext ctx)
-        //{
-        //    await ctx.Member.VoiceState.Channel.ConnectAsync();
-        //}
-        //
-        //[Command("leave")]
-        //public async Task Leave(CommandContext ctx)
-        //{
-        //    VoiceNextExtension vnext = Program.discord.GetVoiceNext();
-        //    VoiceNextConnection connection = vnext.GetConnection(ctx.Guild);
-        //    connection.Disconnect();
-        //
-        //    await Task.CompletedTask;
-        //}
-
         [Command("mute")]
         [Aliases("m")]
         [Description("Mutes everyone in your current voice channel.")]
@@ -45,42 +29,29 @@ namespace AmongUsDriver
         public async Task Mute(CommandContext ctx)
         {
 
-            // Checks if player is in a voice channel on the server.
+            // Checks if user is in a voice channel on the server.
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
                 return;
             }
 
-            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
-            {
-                return;
-            }
-            else
-            {
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
-            }
+            // If user is in a voice channel...
 
-            //
-            //await Program.discord.ReconnectAsync(true);
-
-            // Start the muting
+            // Start the muting process
             try
             {
-                Program.guildToBool_IsMuted[ctx.Guild.Id] = true;
-
                 foreach (var member in ctx.Member.VoiceState.Channel.Users)
                 {
                     await member.SetMuteAsync(true);
                 }
-                await ctx.RespondAsync($"{ctx.User.Mention}, All muted.");
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
+
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(Program.discord, ":white_check_mark:"));
 
             }
             catch
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, Error! Something went wrong. :/");
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(Program.discord, ":x:"));
             }
 
         }
@@ -99,58 +70,33 @@ namespace AmongUsDriver
                 return;
             }
 
-            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
-            {
-                return;
-            }
-            else
-            {
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
-            }
+            // If user is in a voice channel...
 
-
-            //
-            //await Program.discord.ReconnectAsync(true);
-
-            // Start the unmuting
+            // Start the unmuting process
             try
             {
-
-                Program.guildToBool_IsMuted[ctx.Guild.Id] = false;
-
                 foreach (var member in ctx.Member.VoiceState.Channel.Users)
                 {
                     await member.SetMuteAsync(false);
                 }
-                await ctx.RespondAsync($"{ctx.User.Mention}, All unmuted.");
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
 
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(Program.discord, ":white_check_mark:"));
             }
             catch
             {
-                await ctx.RespondAsync($"{ctx.User.Mention}, Error! Something went wrong. :/");
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(Program.discord, ":x:"));
             }
 
         }
 
-        [Command("reload")]
-        [Aliases("r")]
-        public async Task Reload(CommandContext ctx)
+        [Command("refresh")]
+        [Aliases("r", "reload")]
+        [Description("Refreshes data. This needs to be done everytime someone new joins the vc and at the start of use. This ensures everyone get muted and unmuted.")]
+        public async Task Refresh(CommandContext ctx)
         {
-            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
-            {
-                return;
-            }
-            else
-            {
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
-            }
-
             await Program.discord.ReconnectAsync(true);
-            await ctx.RespondAsync("Reloading... Please wait a moment before using me. (I won't tell you when I am ready. Worst-case scenario I'll just ignore a few of your next command.)");
-            Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
-            
+
+            await ctx.RespondAsync("Refreshing... Please wait a moment. (I won't tell you when I am ready. Worst-case scenario, I'll just ignore a few of your next commands.)");
         }
 
 
@@ -159,20 +105,10 @@ namespace AmongUsDriver
         [RequirePermissions(DSharpPlus.Permissions.MoveMembers)]
         public async Task Move(CommandContext ctx, [RemainingText()] string voice_channel)
         {
-            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
-            {
-                return;
-            }
-            else
-            {
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
-            }
-
             // before doing these instructions check if player is even present a voice channel.
             if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, you cannot be found in a voice channel on this server.");
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
                 return;
             }
 
@@ -211,10 +147,8 @@ namespace AmongUsDriver
             if (targetVoiceChannel == ctx.Member.VoiceState.Channel)
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, I couldn't find the voice channel you wish to join. (Or you are already in that voice channel).");
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
                 return;
             }
-
 
             // move all players from current room to that room.
             var membersInCurrentVoiceChannel = ctx.Member.VoiceState.Channel.Users.ToArray();
@@ -227,33 +161,20 @@ namespace AmongUsDriver
                     await member.PlaceInAsync(targetVoiceChannel);
 
                 }
-                await ctx.RespondAsync($"{ctx.User.Mention}, All moved.");
+                await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(Program.discord, ":white_check_mark:"));
             }
             catch
             {
                 await ctx.RespondAsync($"{ctx.User.Mention}, Error! An individual left too quickly. (Or not everyone has permissions to access that room.)");
             }
-            Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
-
 
 
         }
 
-        [Command("cleardms")]
-        [Description("Used to clear your dms with this bot. (Deletes max 10 messages per command.)")]
-        public async Task ClearDMS(CommandContext ctx)
+        [Command("clearmydms")]
+        [Description("Clears the last 10 direct messages AUD has sent you.")]
+        public async Task ClearMyDMs(CommandContext ctx)
         {
-            if (Program.guildToBool_IsWorking[ctx.Guild.Id])
-            {
-                return;
-            }
-            else
-            {
-                Program.guildToBool_IsWorking[ctx.Guild.Id] = true;
-            }
-
-            await ctx.RespondAsync($". . .");
-        
             var userDM = await ctx.Member.CreateDmChannelAsync();
             var messages = userDM.GetMessagesAsync(10).Result;
         
@@ -261,44 +182,10 @@ namespace AmongUsDriver
             {
                 await message.DeleteAsync();
             }
-            
-            await ctx.RespondAsync($"{ctx.User.Mention} Deleted some dms.");
-            Program.guildToBool_IsWorking[ctx.Guild.Id] = false;
 
+            await ctx.Message.CreateReactionAsync(DiscordEmoji.FromName(Program.discord, ":white_check_mark:"));
         }
-
-        //[Command("refresh")]
-        //[Aliases("r")]
-        //[Description("Refreshes the bot.")]
-        //public async Task Refresh(CommandContext ctx)
-        //{
-        //
-        //    await ctx.RespondAsync(". . .");
-        //    
-        //    // The only way I found that can successfully update Voice Channel Users.
-        //    await Program.discord.DisconnectAsync();
-        //    // BOT 'LISTENING' 'PLAYING' 'STREAMING...
-        //    DiscordActivity discordActivity = new DiscordActivity();
-        //    discordActivity.ActivityType = ActivityType.Playing;
-        //    discordActivity.Name = "Among Us | .help";
-        //    // "Reconnect" back. (ReconnectAsync doesn't actually work).
-        //    await Program.discord.ConnectAsync(discordActivity);
-        //
-        //    await Task.Delay(5000);
-        //    await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
-        //
-        //    // Wait for ready then output Refreshed.
-        //    //Program.discord.Ready += (s, e) =>
-        //    //{
-        //    //    _ = Task.Run(async () => 
-        //    //    {
-        //    //        await ctx.RespondAsync($"{ctx.Member.Mention}, Refreshed.");
-        //    //    });
-        //    //    return Task.CompletedTask;
-        //    //};
-        //
-        //}
-
+                
     }
 
 }
