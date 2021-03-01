@@ -5,28 +5,11 @@ Origin
 -----------
 
 The idea for this discord bot occured to me when I was getting fustrated about people continuing to talk after the discussion phase in Among Us. It irritated me and I wanted a fix. So, I decided to make my own solution. I called it "Among Us Driver", AUD for short.
-<!--
-How to use
------------
-You can add my bot to your discord server by using the link below.
 
-https://discord.com/api/oauth2/authorize?client_id=757258351146041474&permissions=57703504&scope=bot
-
-Note: This link now has appropriate permissions for the current and potential future usage for this bot. If some permissions are not granted, the bot may not work as intended. Also the bot occasionally has development downtime as this is an ongoing project.
-
-The bot's prefix is "."  
-Use ".help" for commands. 
-"Moderator" is the person executing the command.
--->
 Features
 -----------
-* Able to mute and unmute all members in your voice channel via command.
-* Able to move everyone in your current voice channel to another voice channel.
-* Able to host Among Us games and distribute game code easily.
-
-Contact Me
------------
-If you would like to contact me, you can reach me over at my discord server. https://discord.gg/WAV5v47
+* Mute and unmute all members in your voice channel via command.
+* Move all members in your current voice channel to another voice channel.
 
 For Developers
 -----------
@@ -34,7 +17,7 @@ In order to host your own version of this bot, there are some prerequisites.
 
 **Step 1:** You'll need a discord developer app and a bot attached.
 
-**Step 2:** You’ll need your own config.json file. So create one.
+**Step 2:** You’ll need to create your own config.json file.
 
 ```json
 {
@@ -45,7 +28,7 @@ In order to host your own version of this bot, there are some prerequisites.
 }
 ```
 
-Replace the token string with your discord bot's token. Whilst you're here, you could change the prefix if you want.
+Replace the token string with your own discord bot token. Whilst you're here, you could change the bot's prefix.
 
 **Step 3:** You need to be able to download and operate the .NET Core 3.1 framework.
 
@@ -64,3 +47,5 @@ Packages you'll need:
 * DSharpPlus.VoiceNext
 
 Now you should be able to try Step 5 again.
+
+Happy hunting imposters!
