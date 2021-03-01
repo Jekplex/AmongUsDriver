@@ -48,4 +48,4 @@ Packages you'll need:
 
 Now you should be able to try Step 5 again.
 
-Happy hunting imposters!
+**Happy hunting imposters!**
